@@ -43,7 +43,7 @@ def wzor_lancucha_aminokwasow(x):
         "E":"NC(C(O)=O)CCC(=O)O",
         "G":"NC(C(O)=O)",
         "M":"N[C@H](C(O)=O)CCSC"
-    }
+    } #słownik który każdemu kodonowi ich wzór chemiczny
     PozFirC={
         "S":9,
         "F":5,
@@ -65,13 +65,13 @@ def wzor_lancucha_aminokwasow(x):
         "E": 5,
         "G": 5,
         "M":9
-    }
+    } # słownik który przechowuje pozycje grupy OH każdego kodonu we wzorach smiles
     slowo=""
     liczba=0
     for znak in x:
-        if znak=="*":
+        if znak=="*": #jeśli kodon stop, to przestań kodować
             return slowo+"*"
-        slowo=slowo[0:liczba]+Smiles[znak]+slowo[liczba+1:]
+        slowo=slowo[0:liczba]+Smiles[znak]+slowo[liczba+1:] # zastępuje grupę OH następnym związkiem
         liczba += PozFirC[znak]
     return slowo
 def interfejs(oknoR, okno): #funkcja obsługująca główny interfejs programu
@@ -119,7 +119,7 @@ def wczytaj_recznie(oknoR,okno,wzorpoczatkowy=""): #funkcja wczytująca dane z "
     wykresyButton.grid(row=1,column=5)
     wrocButton.grid(row=2,column=5)
     okno.mainloop()
-def generuj(okno,wejscie):
+def generuj(okno,wejscie): #funkcja generująca obrazek danego związku z ciągu aminokwasów
     t0 = time.time()
     genom=Seq(wejscie.get())
     kodon=genom.translate()
@@ -130,7 +130,7 @@ def generuj(okno,wejscie):
     obraz.grid(row=1, column=0, columnspan=5)
     print (time.time() - t0)
     okno.mainloop()
-def wykresy(okno, oknoR,wejscie):
+def wykresy(okno, oknoR,wejscie): #robocza funkcja do wykresów
     wzor=wejscie.get()
     okno.destroy()
     okno = ctk.CTkFrame(oknoR)
