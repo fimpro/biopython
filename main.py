@@ -27,7 +27,7 @@ def interfejs(okno): #funkcja obsługująca główny interfejs programu
     mol = Chem.MolFromSmiles(operacje_chemiczne.wzor_lancucha_aminokwasow(translated))
 
 
-    img1 = ImageTk.PhotoImage(Draw.MolToImage(mol, size=(500, 500)))
+    img1 = CTkImage(light_image=Draw.MolToImage(mol, size=(500, 500)),dark_image=Draw.MolToImage(mol, size=(500, 500)),size=(500,500))
 
     napis=CTkLabel(okno, text="Wybierz Opcje")
     plikButton = CTkButton(okno, text="Dane z Pliku", command=lambda:wczytaj_z_pliku(okno))
@@ -35,7 +35,7 @@ def interfejs(okno): #funkcja obsługująca główny interfejs programu
     instrukcjeButton = CTkButton(okno, text="Instrukcja",command= instrukcja)
     opcjeButton = CTkButton(okno, text="Opcje", command=lambda:interfaceOpcje(okno))
 
-    obraz = CTkLabel(okno, image=img1)
+    obraz = CTkLabel(okno,text="", image=img1)
     obraz.grid(row=0, column=1, rowspan=10)
     plikButton.grid(row=1, column=0)
     recznieButton.grid(row=2, column=0)
@@ -123,7 +123,7 @@ def interfaceOpcje(okno): #funkcja wczytująca interface opcji
     napisWroc = CTkLabel(okno, text="wróc do menu:")
     przyciskMode= CTkButton(okno,text=mode,command=lambda:zmien_tryb(okno))
     przyciskKolor = CTkButton(okno,text=base_color,command=lambda:zmien_kolor(okno))
-    przyciskWroc= CTkButton(okno,text="Wróc",command=lambda:zapis(okno),border_color=okno.fg_color)
+    przyciskWroc= CTkButton(okno,text="Wróc",command=lambda:zapis(okno),border_color=okno._fg_color)
     przyciskMode.grid(row=1,column=0)
     przyciskKolor.grid(row=3,column=0)
     przyciskWroc.grid(row=5,column=0)
@@ -170,7 +170,7 @@ def instrukcja(): #funkcja wczytująca instruckje użytkowania
     print("instrukcja")
 if __name__ == '__main__':
     oknoR = CTk()
-    okno = CTkFrame(oknoR,fg_color=oknoR.fg_color,relief=RAISED)
+    okno = CTkFrame(oknoR,fg_color=oknoR._fg_color)
     okno.pack()
     oknoR.minsize(height=500, width=650)
     oknoR.title("Katolgenom")
