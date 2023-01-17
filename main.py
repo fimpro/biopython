@@ -9,6 +9,8 @@ from rdkit.Chem import Draw
 from rdkit.Chem import AllChem
 import operacje_chemiczne
 from tkinter import filedialog
+
+
 mode="dark" #zmienna przechowująca tryb aplikacji
 base_color="dark-blue"
 class przycisk_dane():                #klasa, która tworzy przycisk ctk z zapamiętaniem danych. Używam do zapisu danych z fora w przycisku (rozwiązuje errora)
@@ -23,13 +25,17 @@ def interfejs(okno): #funkcja obsługująca główny interfejs programu
     seq=Seq("AUGGAACGCGAACCCUAC")
     translated=seq.translate()
     mol = Chem.MolFromSmiles(operacje_chemiczne.wzor_lancucha_aminokwasow(translated))
+
+
+    img1 = ImageTk.PhotoImage(Draw.MolToImage(mol, size=(500, 500)))
+
     napis=CTkLabel(okno, text="Wybierz Opcje")
     plikButton = CTkButton(okno, text="Dane z Pliku", command=lambda:wczytaj_z_pliku(okno))
     recznieButton = CTkButton(okno, text="Dane Ręcznie", command=lambda:wczytaj_recznie(okno,lancpoczatkowy="AUGUAA"))
     instrukcjeButton = CTkButton(okno, text="Instrukcja",command= instrukcja)
     opcjeButton = CTkButton(okno, text="Opcje", command=lambda:interfaceOpcje(okno))
-    img1=ImageTk.PhotoImage(Draw.MolToImage(mol, size=(500, 500), kekulize=True, wedgeBonds=True, fitImage=True))
-    obraz=CTkLabel(okno,image=img1)
+
+    obraz = CTkLabel(okno, image=img1)
     obraz.grid(row=0, column=1, rowspan=10)
     plikButton.grid(row=1, column=0)
     recznieButton.grid(row=2, column=0)
@@ -71,7 +77,6 @@ def wczytaj_recznie(okno,lancpoczatkowy=""): #funkcja wczytująca dane z "palca"
     wejscie.grid(row=0,column=1, columnspan=4 )
     szukajButton.grid(row=0,column=5)
     wrocButton.grid(row=1,column=5)
-    okno.mainloop()
 def szukaj_interface(okno,wejscie): #funkcja wypisująca wszystkie łańcuchy w interfejsie
     lanc=Seq(wejscie.get())
 
@@ -110,7 +115,6 @@ def wykresy(okno,wzor,lancpowrotny): #robocza funkcja do wykresów
     returnButton=CTkButton(okno, text="Wróć",command=lambda:rysuj_interface(okno,wzor,lancpowrotny))
     napis.grid(row=0, column=0)
     returnButton.grid(row=1, column=0)
-    okno.mainloop()
 def interfaceOpcje(okno): #funkcja wczytująca interface opcji
     for widget in okno.winfo_children():
         widget.destroy()
@@ -179,4 +183,3 @@ if __name__ == '__main__':
     set_default_color_theme(base_color)
     interfejs(okno)
     oknoR.mainloop()
-
