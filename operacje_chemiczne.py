@@ -19,7 +19,8 @@ def wzor_lancucha_aminokwasow(x):
         "D":"NC(C(O)=O)CC(=O)O",
         "E":"NC(C(O)=O)CCC(=O)O",
         "G":"NC(C(O)=O)",
-        "M":"N[C@H](C(O)=O)CCSC"
+        "M":"N[C@H](C(O)=O)CCSC",
+        "Q":"I"
     } #słownik który każdemu kodonowi ich wzór chemiczny
     PozFirC={
         "S":9,
@@ -48,9 +49,14 @@ def wzor_lancucha_aminokwasow(x):
     for znak in x:
         if znak=="*": #jeśli kodon stop, to przestań kodować
             return slowo+"*"
-        slowo=slowo[0:liczba]+Smiles[znak]+slowo[liczba+1:] # zastępuje grupę OH następnym związkiem
+        slowo=slowo[0:liczba]+Smiles[znak]+slowo[liczba+1:]# zastępuje grupę OH następnym związkiem
         liczba += PozFirC[znak]
-    return slowo
+    lanc=slowo[0:liczba+1]
+    dlugosc=0
+    for x in lanc:
+        if (x=='N' or x=='C'):
+            dlugosc+=1
+    return slowo, dlugosc
 
 def rozklad_na_bialka(lanc): #funkcja przyjmująca łańcuch kodonów, a zwracająca kandydatów na białka w tablicy
     bialka=[]
