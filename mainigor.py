@@ -9,6 +9,7 @@ from rdkit.Chem import Draw
 from rdkit.Chem import AllChem
 import operacje_chemiczne
 from tkinter import filedialog
+import math
 
 
 mode="dark" #zmienna przechowująca tryb aplikacji
@@ -129,12 +130,20 @@ def rysuj_dziwnie_interface(okno,lanc_Kodonow,lancpowrotny):
         jakdlugo+=math.floor(len(lanc_Kodonow) / Dzielimy_na)
     i=0
     k=0
+    print("xd")
 
     for x in bialeczka:
-        Smiles = operacje_chemiczne.wzor_lancucha_aminokwasow(x)
+        Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(x)
         mol = Chem.MolFromSmiles(Smiles)
-        wzor_strukturalny = ImageTk.PhotoImage(
-            Draw.MolToImage(mol, size=(500, 500), kekulize=True, wedgeBonds=True, fitImage=True))
+        if (czy_podswietlaj):
+            hit_bonds = []
+            atomy = (0, ostatni)
+            for x in range(ostatni):
+                hit_bonds.append(x)
+            obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(500, 500))
+        else:
+            obraz = Draw.MolToImage(mol, size=(500, 500))
+        wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(500, 500))
         obraz = CTkLabel(okno, text="", image=wzor_strukturalny)
         obraz.grid(row=k, column=i, rowspan=1)
         i+=1
@@ -145,17 +154,19 @@ def rysuj_dziwnie_interface(okno,lanc_Kodonow,lancpowrotny):
 
     wrocButton = CTkButton(okno, text="Wroc", width=140, command=lambda: interfejs(okno))
     wrocButton.grid(row=1, column=5)
-
+    okno.mainloop()
 def rysuj_interface(okno,lanc_Kodonow,lancpowrotny):
     for widget in okno.winfo_children(): #czycimy okno
         widget.destroy()
     Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(lanc_Kodonow)
     mol = Chem.MolFromSmiles(Smiles)
-    hit_bonds = []
-    for x in range(ostatni):
-        hit_bonds.append(x)
-    atomy = (0, ostatni)
+
+
     if(czy_podswietlaj):
+        hit_bonds = []
+        atomy = (0, ostatni)
+        for x in range(ostatni):
+            hit_bonds.append(x)
         obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(500, 500))
     else:
         obraz = Draw.MolToImage(mol, size=(500, 500))
