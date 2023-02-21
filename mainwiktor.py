@@ -1,3 +1,4 @@
+
 from Bio.Seq import Seq
 import time
 import sys
@@ -16,12 +17,14 @@ mode = "dark"  # zmienna przechowująca tryb aplikacji
 base_color = "dark-blue"
 czy_podswietlaj = True
 
+
 class przycisk_dane():  # klasa, która tworzy przycisk ctk z zapamiętaniem danych. Używam do zapisu danych z fora w przycisku (rozwiązuje errora)
     def __init__(self, okno, zwiazek, lanc):
         self.przycisk = CTkButton(okno, text="Generuj", width=100, command=lambda: rysuj_interface(okno, zwiazek, lanc))
 
     def gridbutton(self, x, y):
         self.przycisk.grid(row=x, column=y)
+
 
 class przycisk_dziwne_dane():  # ten sam przycisk co na gorze tylko z inna funkcja
     def __init__(self, okno, zwiazek, lanc):
@@ -30,6 +33,7 @@ class przycisk_dziwne_dane():  # ten sam przycisk co na gorze tylko z inna funkc
 
     def gridbutton(self, x, y):
         self.przycisk.grid(row=x, column=y)
+
 
 def interfejs(okno):  # funkcja obsługująca główny interfejs programu
     for widget in okno.winfo_children():
@@ -63,6 +67,7 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu
     napis.grid(row=0, column=0)
     oknoR.mainloop()
 
+
 def wczytaj_z_pliku(okno):  # funkcja wczytująca dane z pliku
     for widget in okno.winfo_children():
         widget.destroy()
@@ -77,13 +82,16 @@ def wczytaj_z_pliku(okno):  # funkcja wczytująca dane z pliku
     przyciskSzukaj.grid(row=2, column=6)
     przyciskWroc.grid(row=3, column=6)
 
+
 def przegladaj(wejscie):
     filename = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a File",
                                           filetypes=(("Text files", "*.txt*"), ("all files", "*.*")))
     wejscie.insert(0, filename)
 
+
 def szukaj_z_pliku():
     print("hendorzyc disa psa syna diabla")
+
 
 def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "palca"
     for widget in okno.winfo_children():
@@ -100,6 +108,7 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
     wejscie.grid(row=0, column=1, columnspan=4)
     szukajButton.grid(row=0, column=5)
     wrocButton.grid(row=1, column=5)
+
 
 def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy w interfejsie
     lanc = Seq(wejscie.get())
@@ -126,6 +135,7 @@ def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy
     for x in bialka_przyciski:
         x.gridbutton(i, 4)
         i += 1
+
 
 def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny):
     for widget in okno.winfo_children():  # czycimy okno
@@ -167,6 +177,7 @@ def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny):
     wrocButton.grid(row=1, column=5)
     okno.mainloop()
 
+
 def rysuj_interface(okno, lanc_Kodonow, lancpowrotny):
     for widget in okno.winfo_children():  # czyscimy okno
         widget.destroy()
@@ -183,32 +194,34 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny):
         obraz = Draw.MolToImage(mol, size=(500, 500))
     wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(500, 500))
     WrocButton = CTkButton(okno, text="wroc", command=lambda: wczytaj_recznie(okno, lancpowrotny))
-    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy(okno, Smiles,  lanc_Kodonow, lancpowrotny))
+    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy(okno, Smiles, lancpowrotny,lanc_Kodonow))
     obraz = CTkLabel(okno, image=wzor_strukturalny, text="")
     obraz.grid(row=0, column=0, rowspan=6)
     WrocButton.grid(row=0, column=1)
     WykresyButton.grid(row=1, column=1)
     okno.mainloop()
 
+
 def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykresów
 
     for widget in okno.winfo_children():
         widget.destroy()
 
-    analizuj = ProteinAnalysis(lancpowrotny)  # tablica do analizowania bialek
+    analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
     dw_y = []  # dane wykres w osi y; tablica 2d
     dw_y.append(analizuj.instability_index())
     dw_y.append(analizuj.isoelectric_point())
     dw_y.append(analizuj.get_amino_acids_percent())
-    indeksh=operacje_chemiczne.indeks_hydrofobowy(lancpowrotny)
+    indeksh = operacje_chemiczne.indeks_hydrofobowy(lanc_Kodonow)
     dw_y.append(indeksh)
     print(lancpowrotny)
     print(dw_y)
 
     napis = CTkLabel(okno, text=wzor, width=100)
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: rysuj_interface(okno, wzor, lancpowrotny))
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: rysuj_interface(okno, lanc_Kodonow, lancpowrotny))
     napis.grid(row=0, column=0)
     returnButton.grid(row=1, column=0)
+
 
 def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     for widget in okno.winfo_children():
@@ -233,6 +246,7 @@ def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     napisPodswietlaj.grid(row=4, column=0)
     napisWroc.grid(row=6, column=0)
 
+
 def podswietlenie(okno):
     global czy_podswietlaj
     if (czy_podswietlaj == True):
@@ -244,6 +258,7 @@ def podswietlenie(okno):
         interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
 
+
 def zapis(okno):
     plik = open("opcje.txt", 'w')
     plik.write(mode + '\n')
@@ -251,6 +266,7 @@ def zapis(okno):
     plik.write(str(czy_podswietlaj) + '\n')
     plik.close()
     interfejs(okno)
+
 
 def zmien_tryb(okno):
     global mode
@@ -265,6 +281,7 @@ def zmien_tryb(okno):
         mode = "dark"
         interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
+
 
 def zmien_kolor(okno):
     global base_color
@@ -287,6 +304,7 @@ def zmien_kolor(okno):
 
 def instrukcja():  # funkcja wczytująca instruckje użytkowania
     print("instrukcja")
+
 
 if __name__ == '__main__':
     oknoR = CTk()
