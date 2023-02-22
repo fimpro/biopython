@@ -1,3 +1,4 @@
+from rdkit import Chem
 def wzor_lancucha_aminokwasow(x):
     Smiles={
         "S":"N[C@H](C(O)=O)CO",
@@ -69,11 +70,10 @@ def rozklad_na_bialka(lanc): #funkcja przyjmująca łańcuch kodonów, a zwracaj
             j += 1
         if (czy_bialko):
             bialka[j] = bialka[j] + i
-        if(i=="M"):
+        elif(i=="M"):
             bialka.append("M")
             czy_bialko=True
     return bialka
-
 def indeks_hydrofobowy(lanc_Kodonow):  # funkcja ze słownikiem zwraca gotowe tablice do wykorzystwania w wykresie
     kd = {'A': 1.8, 'R': -4.5, 'N': -3.5, 'D': -3.5, 'C': 2.5,
           'Q': -3.5, 'E': -3.5, 'G': -0.4, 'H': -3.2, 'I': 4.5,
@@ -83,3 +83,7 @@ def indeks_hydrofobowy(lanc_Kodonow):  # funkcja ze słownikiem zwraca gotowe ta
     for x in lanc_Kodonow:
         dane_y.append(kd[x])
     return dane_y
+def listaAtomow(wzor):
+    mol=Chem.MolFromSmiles(wzor)
+    for atom in mol.GetAtoms():
+        print(atom.GetAtomicNum())
