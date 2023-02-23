@@ -1,4 +1,6 @@
 from rdkit import Chem
+import math
+from Bio.Seq import Seq
 def wzor_lancucha_aminokwasow(x):
     Smiles={
         "S":"N[C@H](C(O)=O)CO",
@@ -58,17 +60,32 @@ def wzor_lancucha_aminokwasow(x):
         if (x=='N' or x=='C'):
             dlugosc+=1
     return slowo, dlugosc
-
+def translacjaBezBugow(lanc):
+    dl=len(lanc)
+    lanc1=lanc[:math.floor(dl/3)*3]#łancuch 1 to łancuch pełnych trójek aminokwasów, zaczynając od 0 aminokwasu
+    if(dl%3==0):
+        lanc2 = lanc[1:math.floor(dl / 3) * 3-2]
+    else:
+        lanc2=lanc[1:math.floor(dl/3)*3+1]
+    if(dl%3==2):
+        lanc3 = lanc[2:math.floor(dl / 3) * 3 + 2]
+    else:
+        lanc3 = lanc[2:math.floor(dl / 3) * 3 - 1]
+    tl1=Seq(lanc1)
+    tl2=Seq(lanc2)
+    tl3=Seq(lanc3)
+    return (tl1.translate()),tl2.translate(),tl3.translate()
 def rozklad_na_bialka(lanc): #funkcja przyjmująca łańcuch kodonów, a zwracająca kandydatów na białka w tablicy
     bialka=[]
 
     j=0
     czy_bialko=False
+    dl=len(lanc)
     for i in lanc: #for który każdy kodon podłacza do danego białka
-        if (i == "*"): #kodony stop oznaczone są w biopythonie *
+        if (i == "*" and czy_bialko): #kodony stop oznaczone są w biopythonie *
             czy_bialko = False
             j += 1
-        if (czy_bialko):
+        if czy_bialko:
             bialka[j] = bialka[j] + i
         elif(i=="M"):
             bialka.append("M")

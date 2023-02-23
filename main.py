@@ -113,21 +113,43 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
 
 
 def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy w interfejsie
-    lanc = Seq(wejscie.get())
-
-    bialka = operacje_chemiczne.rozklad_na_bialka(lanc.translate())
+    lanc=Seq(wejscie.get()) #czysty lancuch wpisany
+    lanc1,lanc2,lanc3 = operacje_chemiczne.translacjaBezBugow(wejscie.get())#obrobione lancuchy
+    bialka1 = operacje_chemiczne.rozklad_na_bialka(lanc1) #3 łancuchy białek dla 3 przesunięć
+    bialka2 = operacje_chemiczne.rozklad_na_bialka(lanc2)
+    bialka3=operacje_chemiczne.rozklad_na_bialka(lanc3)
     bialka_napisy = []
     bialka_przyciski = []
     bialka_dziwne_przyciski = []
     # to jest lista bialek pelnych typu bialka = ('MIIIIIIII','MIIF') a x oznacza ktore z tych
     BialkaRamka=CTkScrollableFrame(okno,width=498,height=400)
     BialkaRamka.grid(row=2,column=0,columnspan=4)
-    for x in bialka:
-        bialka_napisy.append(CTkLabel(BialkaRamka, text=x, width=398))    #napisy do białek
+    for x in bialka1:
+        if(len(x)>10): #jeśli dłuższe niż 10, to go skracamy
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5]+"..."+x[len(x)-5:]+" P:0"), width=398))    #napisy do białek
+        else:
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x +" P:0"), width=398))  # napisy do białek
         bialka_przyciski.append(przycisk_dane(BialkaRamka,okno, x, lanc)) #przyciski do normalnej generacji
         bialka_dziwne_przyciski.append(przycisk_dziwne_dane(BialkaRamka,okno, x, lanc)) #przyciski do "dziwnej" generacji
         #przyciski do szybkiej generacji
-
+    for x in bialka2:
+        if(len(x) > 10):  # jeśli dłuższe niż 10, to go skracamy
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:1"),width=398))  # napisy do białek
+        else:
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:1"), width=398))  # napisy do białek
+        bialka_przyciski.append(przycisk_dane(BialkaRamka, okno, x, lanc))  # przyciski do normalnej generacji
+        bialka_dziwne_przyciski.append(
+        przycisk_dziwne_dane(BialkaRamka, okno, x, lanc))  # przyciski do "dziwnej" generacji
+        # przyciski do szybkiej generacji
+    for x in bialka3:
+        if(len(x) > 10):  # jeśli dłuższe niż 10, to go skracamy
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:2"),width=398))  # napisy do białek
+        else:
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:2"), width=398))  # napisy do białek
+        bialka_przyciski.append(przycisk_dane(BialkaRamka, okno, x, lanc))  # przyciski do normalnej generacji
+        bialka_dziwne_przyciski.append(
+        przycisk_dziwne_dane(BialkaRamka, okno, x, lanc))  # przyciski do "dziwnej" generacji
+        # przyciski do szybkiej generacji
     i = 2
     for x in bialka_napisy:
         x.grid(row=i, column=0, columnspan=4)
