@@ -21,17 +21,17 @@ czy_podswietlaj = True
 
 
 class przycisk_dane():  # klasa, która tworzy przycisk ctk z zapamiętaniem danych. Używam do zapisu danych z fora w przycisku (rozwiązuje errora)
-    def __init__(self, okno, zwiazek, lanc):
-        self.przycisk = CTkButton(okno, text="Generuj", width=100, command=lambda: rysuj_interface(okno, zwiazek, lanc))
+    def __init__(self,okno, oknofunkcja, zwiazek, lanc):
+        self.przycisk = CTkButton(okno, text="Generuj", width=100, command=lambda: rysuj_interface(oknofunkcja, zwiazek, lanc))
 
     def gridbutton(self, x, y):
         self.przycisk.grid(row=x, column=y)
 
 
 class przycisk_dziwne_dane():  # ten sam przycisk co na gorze tylko z inna funkcja
-    def __init__(self, okno, zwiazek, lanc):
+    def __init__(self, okno, oknofunkcja, zwiazek, lanc):
         self.przycisk = CTkButton(okno, text="Generuj_dziwnie", width=100,
-                                  command=lambda: rysuj_dziwnie_interface(okno, zwiazek, lanc))
+                                  command=lambda: rysuj_dziwnie_interface(oknofunkcja, zwiazek, lanc))
 
     def gridbutton(self, x, y):
         self.przycisk.grid(row=x, column=y)
@@ -123,9 +123,10 @@ def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy
     BialkaRamka=CTkScrollableFrame(okno,width=498,height=400)
     BialkaRamka.grid(row=2,column=0,columnspan=4)
     for x in bialka:
-        bialka_napisy.append(CTkLabel(BialkaRamka, text=x, width=398))
-        bialka_przyciski.append(przycisk_dane(BialkaRamka, x, lanc))
-        bialka_dziwne_przyciski.append(przycisk_dziwne_dane(BialkaRamka, x, lanc))
+        bialka_napisy.append(CTkLabel(BialkaRamka, text=x, width=398))    #napisy do białek
+        bialka_przyciski.append(przycisk_dane(BialkaRamka,okno, x, lanc)) #przyciski do normalnej generacji
+        bialka_dziwne_przyciski.append(przycisk_dziwne_dane(BialkaRamka,okno, x, lanc)) #przyciski do "dziwnej" generacji
+        #przyciski do szybkiej generacji
 
     i = 2
     for x in bialka_napisy:
@@ -133,11 +134,11 @@ def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy
         i += 1
     i = 2
     for x in bialka_dziwne_przyciski:
-        x.gridbutton(i, 3)
+        x.gridbutton(i, 3) #funkcja klasy, działa jak zwykły grid
         i += 1
     i = 2
     for x in bialka_przyciski:
-        x.gridbutton(i, 4)
+        x.gridbutton(i, 4) #funkcja klasy, działa jak zwykły grid
         i += 1
 
 
@@ -192,10 +193,10 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny):
         atomy = (0, ostatni)
         for x in range(ostatni):
             hit_bonds.append(x)
-        obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(1500, 1500))
+        obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(500, 500))
     else:
-        obraz = Draw.MolToImage(mol, size=(1500, 1500))
-    wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(1500, 1500))
+        obraz = Draw.MolToImage(mol, size=(500, 500))
+    wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(500, 500))
     WrocButton = CTkButton(okno, text="wroc", command=lambda: wczytaj_recznie(okno, lancpowrotny))
     WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy(okno, Smiles, lancpowrotny,lanc_Kodonow))
     obraz = CTkLabel(okno, image=wzor_strukturalny, text="")
