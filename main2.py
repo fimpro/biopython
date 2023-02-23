@@ -235,15 +235,19 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
         widget.destroy()
 
     analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
-    dw_y = []
-    dw_y.append(analizuj.get_amino_acids_percent())     #tablica postaci: "kodon": procent (np. 0.2137)
+    dane_kwasy = []
+    dane_kwasy.append(analizuj.count_amino_acids())   #ilosc kazdego z kwasow
+    dane_kwasy.append(analizuj.get_amino_acids_percent())   #procent kazdego z kwasow
     # pojedyncze wartości
-    dw_y.append(analizuj.isoelectric_point())
-    dw_y.append(pH_bialka(lancpowrotny))
+    dw = []
+    dw.append(analizuj.secondary_structure_fraction())
+    # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
+    dw.append(analizuj.isoelectric_point())
+    dw.append(pH_bialka(lancpowrotny))
     if (analizuj.instability_index() <= 40):
-        dw_y.append("Białko stabilne")
+        dw.append("Białko stabilne")
     elif (analizuj.instability_index() > 40):
-        dw_y.append("Białko niestabilne")
+        dw.append("Białko niestabilne")
     print(dane_wykres(lancpowrotny))
 
     napis = CTkLabel(okno, text="", width=100)    #dopisać wzór tam gdzie puste!!!
