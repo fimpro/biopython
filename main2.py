@@ -235,8 +235,9 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
         widget.destroy()
 
     analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
+    dw_y = []
+    dw_y.append(analizuj.get_amino_acids_percent())     #tablica postaci: "kodon": procent (np. 0.2137)
     # pojedyncze wartości
-    dw_y=[]
     dw_y.append(analizuj.isoelectric_point())
     dw_y.append(pH_bialka(lancpowrotny))
     if (analizuj.instability_index() <= 40):
