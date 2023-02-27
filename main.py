@@ -14,32 +14,50 @@ from tkinter import filedialog
 import tkinter
 import math
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
-
+import time
 mode = "dark"  # zmienna przechowująca tryb aplikacji
 base_color = "dark-blue"
 czy_podswietlaj = True
 
-
 class przycisk_dane():  # klasa, która tworzy przycisk ctk z zapamiętaniem danych. Używam do zapisu danych z fora w przycisku (rozwiązuje errora)
     def __init__(self,okno, oknofunkcja, zwiazek, lanc):
-        self.przycisk = CTkButton(okno, text="Generuj", width=100, command=lambda: rysuj_interface(oknofunkcja, zwiazek, lanc))
+        self.przycisk = CTkButton(okno, text="Generuj", command=lambda: rysuj_interface(oknofunkcja, zwiazek, lanc))
 
     def gridbutton(self, x, y):
-        self.przycisk.grid(row=x, column=y)
+        self.przycisk.grid(row=x, column=y,sticky=E+W)
 
 
 class przycisk_dziwne_dane():  # ten sam przycisk co na gorze tylko z inna funkcja
     def __init__(self, okno, oknofunkcja, zwiazek, lanc):
-        self.przycisk = CTkButton(okno, text="Generuj_dziwnie", width=100,
+        self.przycisk = CTkButton(okno, text="Generuj_dziwnie",
                                   command=lambda: rysuj_dziwnie_interface(oknofunkcja, zwiazek, lanc))
 
     def gridbutton(self, x, y):
-        self.przycisk.grid(row=x, column=y)
+        self.przycisk.grid(row=x, column=y,sticky=E+W)
 
 
 def interfejs(okno):  # funkcja obsługująca główny interfejs programu
     for widget in okno.winfo_children():
         widget.destroy()
+    global size
+    size=(okno.winfo_width(),okno.winfo_height())
+    if(size==(200,200)):
+        size=(650,500)
+    okno.columnconfigure(0, weight=3)
+    okno.columnconfigure(1, weight=10)
+    for x in range(10):
+        okno.rowconfigure(x, weight=1)
+    napis = CTkLabel(okno, text="Wybierz Opcje")
+    plikButton = CTkButton(okno, text="Dane z Pliku", command=lambda: wczytaj_z_pliku(okno),width=size[0]*3/13)
+    recznieButton = CTkButton(okno, text="Dane Ręcznie", command=lambda: wczytaj_recznie(okno, lancpoczatkowy="AUGUAA"))
+    instrukcjeButton = CTkButton(okno, text="Instrukcja", command=lambda: instrukcja(okno))
+    opcjeButton = CTkButton(okno, text="Opcje", command=lambda: interfaceOpcje(okno))
+    plikButton.grid(row=1, column=0, sticky=W + E)
+    recznieButton.grid(row=2, column=0, sticky=W + E)
+    instrukcjeButton.grid(row=3, column=0, sticky=W + E)
+    opcjeButton.grid(row=4, column=0, sticky=W + E)
+    napis.grid(row=0, column=0, sticky=W + E)
+
     seq = Seq("AUGGAACGCGAACCCUAC")
     translated = seq.translate()
     wzor, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(translated)
@@ -51,28 +69,20 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu
     atomy = (0, ostatni)
     if (czy_podswietlaj):
         obrazStartowy = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, highlightColor=((0, 1, 0)),
-                                        size=(500, 500))
+                                        size=(int(size[0]*10/13),int(size[1]))) #wyrażenie dostosowywuje rozmiar obrazka do okna, niestety nie dynamicznie :(
     else:
-        obrazStartowy = Draw.MolToImage(mol, size=(500, 500))
-    img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(500, 500))
-    napis = CTkLabel(okno, text="Wybierz Opcje")
-    plikButton = CTkButton(okno, text="Dane z Pliku", command=lambda: wczytaj_z_pliku(okno))
-    recznieButton = CTkButton(okno, text="Dane Ręcznie", command=lambda: wczytaj_recznie(okno, lancpoczatkowy="AUGUAA"))
-    instrukcjeButton = CTkButton(okno, text="Instrukcja", command=lambda:instrukcja(okno))
-    opcjeButton = CTkButton(okno, text="Opcje", command=lambda: interfaceOpcje(okno))
+        obrazStartowy = Draw.MolToImage(mol, size=(int(size[0]*10/13),int(size[1])))
+    img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(int(size[0]*10/13),int(size[1])))
     obraz = CTkLabel(okno, text="", image=img1)
-    obraz.grid(row=0, column=1, rowspan=10)
-    plikButton.grid(row=1, column=0)
-    recznieButton.grid(row=2, column=0)
-    instrukcjeButton.grid(row=3, column=0)
-    opcjeButton.grid(row=4, column=0)
-    napis.grid(row=0, column=0)
-    oknoR.mainloop()
+    obraz.grid(row=0, column=1, rowspan=10,sticky=NW)
+
+
 
 
 def wczytaj_z_pliku(okno):  # funkcja wczytująca dane z pliku
     for widget in okno.winfo_children():
         widget.destroy()
+
     napisTytul = CTkLabel(okno, text="wpisz lokalizacje pliku:")
     sciezkaWejscie = CTkEntry(okno, width=500)
     przyciskPrzegladaj = CTkButton(okno, text="przegladaj", command=lambda: przegladaj(sciezkaWejscie))
@@ -98,21 +108,31 @@ def szukaj_z_pliku():
 def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "palca"
     for widget in okno.winfo_children():
         widget.destroy()
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
+    for x in range(5):
+        okno.columnconfigure(x, weight=2)
+    okno.columnconfigure(5, weight=3)
     genom = Seq(lancpoczatkowy)
-    wejscie = CTkEntry(okno, width=398)
+    wejscie = CTkEntry(okno, width=((size[0]*8)/15))
     wejscie.insert(0, lancpoczatkowy)
     szukaj_interface(okno, wejscie)
-    opis = CTkLabel(okno, text="Wpisz kod nici Rna", width=100)
-    szukajButton = CTkButton(okno, text="Szukaj Białek", width=140, command=lambda: szukaj_interface(okno, wejscie))
-    wrocButton = CTkButton(okno, text="Wroc", width=140, command=lambda: interfejs(okno))
+    opis = CTkLabel(okno, text="Wpisz kod nici Rna", width=((size[0]*2)/15))
+    szukajButton = CTkButton(okno, text="Szukaj Białek", width=((size[0]*3)/15), command=lambda: szukaj_interface(okno, wejscie))
+    wrocButton = CTkButton(okno, text="Wroc", width=15, command=lambda: interfejs(okno))
 
-    opis.grid(row=0, column=0)
-    wejscie.grid(row=0, column=1, columnspan=4)
-    szukajButton.grid(row=0, column=5)
-    wrocButton.grid(row=1, column=5)
+    opis.grid(row=0, column=0,sticky=W+E)
+    wejscie.grid(row=0, column=1, columnspan=4,sticky=W+E)
+    szukajButton.grid(row=0, column=5,sticky=W+E)
+    wrocButton.grid(row=1, column=5,sticky=W+E)
 
 
 def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy w interfejsie
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
+    for x in range(10):
+        okno.rowconfigure(x,weight=0)
+    okno.rowconfigure(1, weight=1)
     lanc=Seq(wejscie.get()) #czysty lancuch wpisany
     lanc1,lanc2,lanc3 = operacje_chemiczne.translacjaBezBugow(wejscie.get())#obrobione lancuchy
     bialka1 = operacje_chemiczne.rozklad_na_bialka(lanc1) #3 łancuchy białek dla 3 przesunięć
@@ -122,37 +142,40 @@ def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy
     bialka_przyciski = []
     bialka_dziwne_przyciski = []
     # to jest lista bialek pelnych typu bialka = ('MIIIIIIII','MIIF') a x oznacza ktore z tych
-    BialkaRamka=CTkScrollableFrame(okno,width=498,height=400)
-    BialkaRamka.grid(row=2,column=0,columnspan=4)
+    BialkaRamka=CTkScrollableFrame(okno,width=(size[0]/15)*12,height=(size[1]-50))
+    Bwidth=(size[0]/15)*12#zmienna przechowująca szerokość naszej ramki
+    BialkaRamka.grid(row=1,column=0,columnspan=4,sticky=E+W+N+S)
+    for x in range(5):
+        BialkaRamka.columnconfigure(x, weight=1)
     for x in bialka1:
         if(len(x)>10): #jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5]+"..."+x[len(x)-5:]+" P:0"), width=398))    #napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5]+"..."+x[len(x)-5:]+" P:0"),width=(Bwidth/5)*3))    #napisy do białek
         else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x +" P:0"), width=398))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x +" P:0"),width=(Bwidth/5)*3))  # napisy do białek
         bialka_przyciski.append(przycisk_dane(BialkaRamka,okno, x, lanc)) #przyciski do normalnej generacji
         bialka_dziwne_przyciski.append(przycisk_dziwne_dane(BialkaRamka,okno, x, lanc)) #przyciski do "dziwnej" generacji
         #przyciski do szybkiej generacji
     for x in bialka2:
         if(len(x) > 10):  # jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:1"),width=398))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:1"),width=(Bwidth/5)*3))  # napisy do białek
         else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:1"), width=398))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:1"),width=(Bwidth/5)*3))  # napisy do białek
         bialka_przyciski.append(przycisk_dane(BialkaRamka, okno, x, lanc))  # przyciski do normalnej generacji
         bialka_dziwne_przyciski.append(
         przycisk_dziwne_dane(BialkaRamka, okno, x, lanc))  # przyciski do "dziwnej" generacji
         # przyciski do szybkiej generacji
     for x in bialka3:
         if(len(x) > 10):  # jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:2"),width=398))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:2"),width=(Bwidth/5)*3))  # napisy do białek
         else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:2"), width=398))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:2"),width=(Bwidth/5)*3))  # napisy do białek
         bialka_przyciski.append(przycisk_dane(BialkaRamka, okno, x, lanc))  # przyciski do normalnej generacji
         bialka_dziwne_przyciski.append(
         przycisk_dziwne_dane(BialkaRamka, okno, x, lanc))  # przyciski do "dziwnej" generacji
         # przyciski do szybkiej generacji
     i = 2
     for x in bialka_napisy:
-        x.grid(row=i, column=0, columnspan=4)
+        x.grid(row=i, column=0, columnspan=3,sticky=E+W)
         i += 1
     i = 2
     for x in bialka_dziwne_przyciski:
@@ -205,8 +228,13 @@ def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny):
 
 
 def rysuj_interface(okno, lanc_Kodonow, lancpowrotny):
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
     for widget in okno.winfo_children():  # czyscimy okno
         widget.destroy()
+    okno.columnconfigure(0, weight=10)
+    okno.columnconfigure(1, weight=3)
+
     Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(lanc_Kodonow)
     mol = Chem.MolFromSmiles(Smiles)
     rdCoordGen.AddCoords(mol)
@@ -215,16 +243,16 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny):
         atomy = (0, ostatni)
         for x in range(ostatni):
             hit_bonds.append(x)
-        obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(500, 500))
+        obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(int(size[0]*10/13),int(size[1])))
     else:
-        obraz = Draw.MolToImage(mol, size=(500, 500))
-    wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(500, 500))
-    WrocButton = CTkButton(okno, text="wroc", command=lambda: wczytaj_recznie(okno, lancpowrotny))
+        obraz = Draw.MolToImage(mol, size=(int(size[0]*10/13),int(size[1])))
+    wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int(size[0]*10/13),int(size[1])))
+    WrocButton = CTkButton(okno, text="wroc", command=lambda: wczytaj_recznie(okno, lancpowrotny),width=size[0]*3/13)
     WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy(okno, Smiles, lancpowrotny,lanc_Kodonow))
     obraz = CTkLabel(okno, image=wzor_strukturalny, text="")
     obraz.grid(row=0, column=0, rowspan=6)
-    WrocButton.grid(row=0, column=1)
-    WykresyButton.grid(row=1, column=1)
+    WrocButton.grid(row=0, column=1,sticky=E+W)
+    WykresyButton.grid(row=1, column=1,sticky=E+W)
     okno.mainloop()
 
 
@@ -340,8 +368,12 @@ def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
 
 if __name__ == '__main__':
     oknoR = CTk()
-    okno = CTkFrame(oknoR, fg_color=oknoR._fg_color)
-    okno.pack()
+    okno = CTkFrame(oknoR)
+    oknoR.geometry("650x500")
+    oknoR.columnconfigure(0,weight=1)
+    oknoR.rowconfigure(0, weight=1)
+    okno.grid(row=0,column=0,sticky=W+E+N+S)
+
     oknoR.minsize(height=500, width=650)
     oknoR.title("Katolgenom")
     plik = open("opcje.txt")

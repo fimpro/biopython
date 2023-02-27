@@ -79,17 +79,22 @@ def rozklad_na_bialka(lanc): #funkcja przyjmująca łańcuch kodonów, a zwracaj
     bialka=[]
 
     j=0
-    czy_bialko=False
+    czy_bialko=False #czy mamy zapisywać kodony
+    czy_skonczone=True #żeby białko się zapisało musi kończyć się kodonem stop
     dl=len(lanc)
     for i in lanc: #for który każdy kodon podłacza do danego białka
         if (i == "*" and czy_bialko): #kodony stop oznaczone są w biopythonie *
             czy_bialko = False
+            czy_skonczone = True
             j += 1
         if czy_bialko:
             bialka[j] = bialka[j] + i
         elif(i=="M"):
             bialka.append("M")
             czy_bialko=True
+            czy_skonczone=False
+    if(not(czy_skonczone)):
+        bialka.pop()
     return bialka
 def indeks_hydrofobowy(lanc_Kodonow):  # funkcja ze słownikiem zwraca gotowe tablice do wykorzystwania w wykresie
     kd = {'A': 1.8, 'R': -4.5, 'N': -3.5, 'D': -3.5, 'C': 2.5,
