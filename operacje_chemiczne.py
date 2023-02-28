@@ -23,7 +23,7 @@ def wzor_lancucha_aminokwasow(x):
         "E":"NC(C(O)=O)CCC(=O)O",
         "G":"NC(C(O)=O)",
         "M":"N[C@H](C(O)=O)CCSC",
-        "Q":"I"
+        "Q":"NC(C(O)=O)CCC(=O)N"
     } #słownik który każdemu kodonowi ich wzór chemiczny
     PozFirC={
         "S":9,
