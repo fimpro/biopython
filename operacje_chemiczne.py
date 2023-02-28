@@ -61,6 +61,19 @@ def wzor_lancucha_aminokwasow(x):
             dlugosc+=1
     return slowo, dlugosc
 def translacjaBezBugow(lanc):
+    czyt=False
+    czyu=False
+    for x in lanc:
+        if(x=='A' or x=='C'or x=='G'):
+            pass
+        elif(x=='U'):
+            czyu=True
+        elif (x == 'T'):
+            czyt = True
+        else:
+            return("","","")
+    if(czyt and czyu):
+        return ("", "", "")
     dl=len(lanc)
     lanc1=lanc[:math.floor(dl/3)*3]#łancuch 1 to łancuch pełnych trójek aminokwasów, zaczynając od 0 aminokwasu
     if(dl%3==0):

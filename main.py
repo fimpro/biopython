@@ -25,16 +25,20 @@ class przycisk_dane():  # klasa, która tworzy przycisk ctk z zapamiętaniem dan
 
     def gridbutton(self, x, y):
         self.przycisk.grid(row=x, column=y,sticky=E+W)
-
-
-class przycisk_dziwne_dane():  # ten sam przycisk co na gorze tylko z inna funkcja
+class przycisk_szczegol_dane():  # ten sam przycisk co na gorze tylko z inna funkcja
     def __init__(self, okno, oknofunkcja, zwiazek, lanc):
-        self.przycisk = CTkButton(okno, text="Generuj_dziwnie",
+        self.przycisk = CTkButton(okno, text="G. Szczegółowo",
                                   command=lambda: rysuj_dziwnie_interface(oknofunkcja, zwiazek, lanc))
 
     def gridbutton(self, x, y):
         self.przycisk.grid(row=x, column=y,sticky=E+W)
+class przycisk_szybkie_dane():  # ten sam przycisk co na gorze tylko z inna funkcja
+    def __init__(self, okno, oknofunkcja, zwiazek, lanc):
+        self.przycisk = CTkButton(okno, text="G. Szybko",
+                                  command=lambda: rysuj_szybko_interface(oknofunkcja, zwiazek, lanc))
 
+    def gridbutton(self, x, y):
+        self.przycisk.grid(row=x, column=y,sticky=E+W)
 
 def interfejs(okno):  # funkcja obsługująca główny interfejs programu
     for widget in okno.winfo_children():
@@ -43,13 +47,15 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu
     size=(okno.winfo_width(),okno.winfo_height())
     if(size==(200,200)):
         size=(650,500)
+    for x in range(10):
+        okno.columnconfigure(x, weight=0)
     okno.columnconfigure(0, weight=3)
     okno.columnconfigure(1, weight=10)
     for x in range(10):
         okno.rowconfigure(x, weight=1)
     napis = CTkLabel(okno, text="Wybierz Opcje")
     plikButton = CTkButton(okno, text="Dane z Pliku", command=lambda: wczytaj_z_pliku(okno),width=size[0]*3/13)
-    recznieButton = CTkButton(okno, text="Dane Ręcznie", command=lambda: wczytaj_recznie(okno, lancpoczatkowy="AUGUAA"))
+    recznieButton = CTkButton(okno, text="Dane Ręcznie", command=lambda: wczytaj_recznie(okno, lancpoczatkowy="AUGAAUGCAUGUAGAUAGAUAGAUGUGA"))
     instrukcjeButton = CTkButton(okno, text="Instrukcja", command=lambda: instrukcja(okno))
     opcjeButton = CTkButton(okno, text="Opcje", command=lambda: interfaceOpcje(okno))
     plikButton.grid(row=1, column=0, sticky=W + E)
@@ -140,58 +146,77 @@ def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy
     bialka3=operacje_chemiczne.rozklad_na_bialka(lanc3)
     bialka_napisy = []
     bialka_przyciski = []
-    bialka_dziwne_przyciski = []
+    bialka_szczegol_przyciski = []
+    bialka_szybkie_przyciski=[]
     # to jest lista bialek pelnych typu bialka = ('MIIIIIIII','MIIF') a x oznacza ktore z tych
     BialkaRamka=CTkScrollableFrame(okno,width=(size[0]/15)*12,height=(size[1]-50))
     Bwidth=(size[0]/15)*12#zmienna przechowująca szerokość naszej ramki
     BialkaRamka.grid(row=1,column=0,columnspan=4,sticky=E+W+N+S)
     for x in range(5):
         BialkaRamka.columnconfigure(x, weight=1)
+    #poniższe 3 fory tworzą przyciski i napisy do białek
     for x in bialka1:
         if(len(x)>10): #jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5]+"..."+x[len(x)-5:]+" P:0"),width=(Bwidth/5)*3))    #napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5]+"..."+x[len(x)-5:]+" P:0"),width=(Bwidth/5)*2))    #napisy do białek
         else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x +" P:0"),width=(Bwidth/5)*3))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x +" P:0"),width=(Bwidth/5)*2))  # napisy do białek
         bialka_przyciski.append(przycisk_dane(BialkaRamka,okno, x, lanc)) #przyciski do normalnej generacji
-        bialka_dziwne_przyciski.append(przycisk_dziwne_dane(BialkaRamka,okno, x, lanc)) #przyciski do "dziwnej" generacji
-        #przyciski do szybkiej generacji
+        bialka_szczegol_przyciski.append(przycisk_szczegol_dane(BialkaRamka,okno, x, lanc)) #przyciski do "szczegółowej" generacji
+        bialka_szybkie_przyciski.append(przycisk_szybkie_dane(BialkaRamka,okno, x, lanc))#przyciski do szybkiej generacji
     for x in bialka2:
         if(len(x) > 10):  # jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:1"),width=(Bwidth/5)*3))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:1"),width=(Bwidth/5)*2))  # napisy do białek
         else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:1"),width=(Bwidth/5)*3))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:1"),width=(Bwidth/5)*2))  # napisy do białek
         bialka_przyciski.append(przycisk_dane(BialkaRamka, okno, x, lanc))  # przyciski do normalnej generacji
-        bialka_dziwne_przyciski.append(
-        przycisk_dziwne_dane(BialkaRamka, okno, x, lanc))  # przyciski do "dziwnej" generacji
-        # przyciski do szybkiej generacji
+        bialka_szczegol_przyciski.append(
+        przycisk_szczegol_dane(BialkaRamka, okno, x, lanc))  # przyciski do "szczegolj" generacji
+        bialka_szybkie_przyciski.append(przycisk_szybkie_dane(BialkaRamka,okno, x, lanc))# przyciski do szybkiej generacji
     for x in bialka3:
         if(len(x) > 10):  # jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:2"),width=(Bwidth/5)*3))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:2"),width=(Bwidth/5)*2))  # napisy do białek
         else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:2"),width=(Bwidth/5)*3))  # napisy do białek
+            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:2"),width=(Bwidth/5)*2))  # napisy do białek
         bialka_przyciski.append(przycisk_dane(BialkaRamka, okno, x, lanc))  # przyciski do normalnej generacji
-        bialka_dziwne_przyciski.append(
-        przycisk_dziwne_dane(BialkaRamka, okno, x, lanc))  # przyciski do "dziwnej" generacji
-        # przyciski do szybkiej generacji
-    i = 2
+        bialka_szczegol_przyciski.append(
+        przycisk_szczegol_dane(BialkaRamka, okno, x, lanc))  # przyciski do "szczegolj" generacji
+        bialka_szybkie_przyciski.append(przycisk_szybkie_dane(BialkaRamka,okno, x, lanc))# przyciski do szybkiej generacji
+    i = 0
+    #poniższe fory rysują nasze przyciski i napisy w ramce
     for x in bialka_napisy:
-        x.grid(row=i, column=0, columnspan=3,sticky=E+W)
+        x.grid(row=i, column=0, columnspan=2,sticky=E+W)
         i += 1
-    i = 2
-    for x in bialka_dziwne_przyciski:
+    i = 0
+    for x in bialka_szczegol_przyciski:
+        x.gridbutton(i, 2) #funkcja klasy, działa jak zwykły grid
+        i += 1
+    i = 0
+    for x in bialka_przyciski:
         x.gridbutton(i, 3) #funkcja klasy, działa jak zwykły grid
         i += 1
-    i = 2
-    for x in bialka_przyciski:
+    i = 0
+    for x in bialka_szybkie_przyciski:
         x.gridbutton(i, 4) #funkcja klasy, działa jak zwykły grid
         i += 1
-
 
 def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny):
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
+
     # to jest lista bialek pelnych typu bialka = ('MIIIIIIII','MIIF')
     # bialka to lista jkbc
+    #resetujemy formatowanie okna i tworzymy nowe
+    for x in range(10):
+        okno.columnconfigure(x,weight=0)
+    for x in range(10):
+        okno.rowconfigure(x,weight=0)
+    okno.columnconfigure(0,weight=25)
+    okno.columnconfigure(1, weight=6)
+    okno.rowconfigure(0,weight=1)
+    okno.rowconfigure(1, weight=1)
+
     Dzielimy_na = math.ceil(len(lanc_Kodonow) / 10)
     bialeczka = []
     poczatek = 0
@@ -202,8 +227,8 @@ def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny):
         jakdlugo += math.floor(len(lanc_Kodonow) / Dzielimy_na)
     i = 0
     k = 0
-    obrazy=CTkScrollableFrame(okno,width=500,height=500)
-    obrazy.grid(row=0,column=0)
+    obrazy=CTkScrollableFrame(okno,width=(int((size[0]/31)*25)),height=size[1])
+    obrazy.grid(row=0,column=0,rowspan=2,sticky=W+E+S+N)
     for x in bialeczka:
         Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(x)
         mol = Chem.MolFromSmiles(Smiles)
@@ -213,19 +238,116 @@ def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny):
             atomy = (0, ostatni)
             for x in range(ostatni):
                 hit_bonds.append(x)
-            obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(500, 200))
+            obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(int((size[0]/31)*25), 200))
         else:
-            obraz = Draw.MolToImage(mol, size=(500, 200))
-        wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(500, 200))
+            obraz = Draw.MolToImage(mol, size=(int((size[0]/31)*25), 200))
+        wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int((size[0]/31)*25), 200))
         obraz = CTkLabel(obrazy, text="", image=wzor_strukturalny)
         obraz.grid(row=i, column=0)
         i += 1
 
 
-    wrocButton = CTkButton(okno, text="Wroc", width=120, command=lambda: wczytaj_recznie(okno,lancpowrotny))
-    wrocButton.grid(row=0, column=1)
-    okno.mainloop()
+    wrocButton = CTkButton(okno, text="Wroc", width=(size[0]/31)*6, command=lambda: wczytaj_recznie(okno,lancpowrotny))
+    WykresyButton = CTkButton(okno, text="wykresy", width=int((size[0] / 31) * 6),
+                              command=lambda: wykresy(okno, Smiles, lanc_Kodonow, lancpowrotny))
 
+    WykresyButton.grid(row=1, column=1, sticky=W + E)
+    wrocButton.grid(row=0, column=1,sticky=W+E)
+
+def rysuj_szybko_interface(okno, lanc_Kodonow, lancpowrotny):
+    for widget in okno.winfo_children():  # czycimy okno
+        widget.destroy()
+    # to jest lista bialek pelnych typu bialka = ('MIIIIIIII','MIIF')
+    # bialka to lista jkbc
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
+    # resetujemy formatowanie okna i tworzymy nowe
+    for x in range(10):
+        okno.columnconfigure(x, weight=0)
+    for x in range(10):
+        okno.rowconfigure(x, weight=0)
+    okno.columnconfigure(0, weight=25)
+    okno.columnconfigure(1, weight=6)
+    okno.rowconfigure(0, weight=1)
+    okno.rowconfigure(1, weight=1)
+    Dzielimy_na = math.ceil(len(lanc_Kodonow) / 10)
+    bialeczka = []
+    poczatek = 0
+    jakdlugo = math.ceil(len(lanc_Kodonow) / Dzielimy_na)
+    if(Dzielimy_na<5):
+        for x in range(Dzielimy_na):
+            bialeczka.append(lanc_Kodonow[poczatek:jakdlugo])
+            poczatek = jakdlugo
+            jakdlugo += math.floor(len(lanc_Kodonow) / Dzielimy_na)
+        i = 0
+        k = 0
+        obrazy=CTkScrollableFrame(okno,width=int((size[0]/31)*25),height=500)
+        obrazy.grid(row=0,column=0,rowspan=2,sticky=N+W+E+S)
+        for x in bialeczka:
+            Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(x)
+            mol = Chem.MolFromSmiles(Smiles)
+            rdCoordGen.AddCoords(mol)
+            if (czy_podswietlaj):
+                hit_bonds = []
+                atomy = (0, ostatni)
+                for x in range(ostatni):
+                    hit_bonds.append(x)
+                obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(int((size[0]/31)*25), 200))
+            else:
+                obraz = Draw.MolToImage(mol, size=(int((size[0]/31)*25), 200))
+            wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int((size[0]/31)*25), 200))
+            obraz = CTkLabel(obrazy, text="", image=wzor_strukturalny)
+            obraz.grid(row=i, column=0)
+            i += 1
+    else:
+        for x in range(Dzielimy_na):
+            bialeczka.append(lanc_Kodonow[poczatek:jakdlugo])
+            poczatek = jakdlugo
+            jakdlugo += math.floor(len(lanc_Kodonow) / Dzielimy_na)
+        i = 0
+        k = 0
+        obrazy=CTkScrollableFrame(okno,width=int((size[0]/31)*25),height=500)
+        obrazy.grid(row=0,column=0,rowspan=2,sticky=N+W+E+S)
+        for x in [bialeczka[0],bialeczka[1]]:
+            Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(x)
+            mol = Chem.MolFromSmiles(Smiles)
+            rdCoordGen.AddCoords(mol)
+            if (czy_podswietlaj):
+                hit_bonds = []
+                atomy = (0, ostatni)
+                for x in range(ostatni):
+                    hit_bonds.append(x)
+                obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(int((size[0]/31)*25), 200))
+            else:
+                obraz = Draw.MolToImage(mol, size=(int((size[0]/31)*25), 200))
+            wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int((size[0]/31)*25), 200))
+            obraz = CTkLabel(obrazy, text="", image=wzor_strukturalny)
+            obraz.grid(row=i, column=0)
+            i += 1
+        tekst=CTkLabel(obrazy,text="...", font=("Arial", 50))
+        tekst.grid(row=i,column=0)
+        i+=1
+        for x in [bialeczka[len(bialeczka)-2],bialeczka[len(bialeczka)-1]]:
+            Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(x)
+            mol = Chem.MolFromSmiles(Smiles)
+            rdCoordGen.AddCoords(mol)
+            if (czy_podswietlaj):
+                hit_bonds = []
+                atomy = (0, ostatni)
+                for x in range(ostatni):
+                    hit_bonds.append(x)
+                obraz = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, size=(int((size[0]/31)*25), 200))
+            else:
+                obraz = Draw.MolToImage(mol, size=(int((size[0]/31)*25), 200))
+            wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int((size[0]/31)*25), 200))
+            obraz = CTkLabel(obrazy, text="", image=wzor_strukturalny)
+            obraz.grid(row=i, column=0)
+            i += 1
+    wrocButton = CTkButton(okno, text="Wroc", width=int((size[0]/31)*6), command=lambda: wczytaj_recznie(okno,lancpowrotny))
+    WykresyButton = CTkButton(okno, text="wykresy",width=int((size[0]/31)*6), command=lambda: wykresy(okno, Smiles, lanc_Kodonow, lancpowrotny))
+
+    WykresyButton.grid(row=1, column=1, sticky=W + E)
+    wrocButton.grid(row=0, column=1, sticky=W + E)
 
 def rysuj_interface(okno, lanc_Kodonow, lancpowrotny):
     global size
@@ -248,7 +370,7 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny):
         obraz = Draw.MolToImage(mol, size=(int(size[0]*10/13),int(size[1])))
     wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int(size[0]*10/13),int(size[1])))
     WrocButton = CTkButton(okno, text="wroc", command=lambda: wczytaj_recznie(okno, lancpowrotny),width=size[0]*3/13)
-    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy(okno, Smiles, lancpowrotny,lanc_Kodonow))
+    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy(okno, Smiles,lanc_Kodonow, lancpowrotny))
     obraz = CTkLabel(okno, image=wzor_strukturalny, text="")
     obraz.grid(row=0, column=0, rowspan=6)
     WrocButton.grid(row=0, column=1,sticky=E+W)
@@ -256,7 +378,7 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny):
     okno.mainloop()
 
 
-def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykresów
+def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykresów
 
     for widget in okno.winfo_children():
         widget.destroy()
@@ -272,7 +394,7 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
     print(dw_y)
 
     napis = CTkLabel(okno, text=wzor, width=100)
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: rysuj_interface(okno, lanc_Kodonow, lancpowrotny))
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: wczytaj_recznie(okno, lancpowrotny))
     AtomyButton = CTkButton(okno, text="Ilość Atomów", command=lambda: WypiszAtomy(okno,wzor, lanc_Kodonow, lancpowrotny))
     napis.grid(row=0, column=0)
     returnButton.grid(row=1, column=0)
@@ -287,6 +409,7 @@ def WypiszAtomy(okno, wzor,lancpowrotny, lanc_Kodonow):
 def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     for widget in okno.winfo_children():
         widget.destroy()
+    okno.columnconfigure(1,weight=0)
     napisMode = CTkLabel(okno, text="zmien kolor tla:")
     napisKolor = CTkLabel(okno, text="zmien kolor przycisków:")
     napisWroc = CTkLabel(okno, text="wróc do menu:")
