@@ -6,7 +6,7 @@ import wykresy
 from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import rdCoordGen
-def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj):
+def rysuj_dziwnie_interface(okno, lanc_kodonow, lanc_powrotny,czy_podswietlaj):
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
     size = (okno.winfo_width(), okno.winfo_height())
@@ -20,14 +20,14 @@ def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj):
     okno.rowconfigure(0,weight=1)
     okno.rowconfigure(1, weight=1)
 
-    Dzielimy_na = math.ceil(len(lanc_Kodonow) / 10) #licze na ile podobrazkow mam podzielić nasz łańcuch
+    Dzielimy_na = math.ceil(len(lanc_kodonow) / 10) #licze na ile podobrazkow mam podzielić nasz łańcuch
     bialeczka = []#lista podzielonych łańcuchów
     poczatek = 0
-    dokiedy = math.ceil(len(lanc_Kodonow) / Dzielimy_na)#dlugosc pojedynczego lancucha(na jednym obrazku)
+    dokiedy = math.ceil(len(lanc_kodonow) / Dzielimy_na)#dlugosc pojedynczego lancucha(na jednym obrazku)
     for x in range(Dzielimy_na): #dzielimy łancuch białek na części, odpowiedniej długości
-        bialeczka.append(lanc_Kodonow[poczatek:dokiedy])
+        bialeczka.append(lanc_kodonow[poczatek:dokiedy])
         poczatek = dokiedy
-        dokiedy += math.floor(len(lanc_Kodonow) / Dzielimy_na)
+        dokiedy += math.floor(len(lanc_kodonow) / Dzielimy_na)
     i = 0
     k = 0
     #tworzymy ramke gdzie wrzucimy obrazy
@@ -52,13 +52,13 @@ def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj):
         i += 1
 
     #wrzucamy pozostałe widgety
-    wrocButton = CTkButton(okno, text="Wroc", width=(size[0]/31)*6, command=lambda: main.wczytaj_recznie(okno,lancpowrotny))
+    wrocButton = CTkButton(okno, text="Wroc", width=(size[0]/31)*6, command=lambda: main.wczytaj_recznie(okno,lanc_powrotny))
     WykresyButton = CTkButton(okno, text="wykresy", width=int((size[0] / 31) * 6),
-                              command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow, lancpowrotny))
+                              command=lambda: wykresy.wykresy(okno, Smiles, lanc_kodonow, lanc_powrotny))
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
     wrocButton.grid(row=0, column=1,sticky=W+E)
-def rysuj_szybko_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj):
+def rysuj_szybko_interface(okno, lanc_kodonow, lanc_powrotny,czy_podswietlaj):
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
     # to jest lista bialek pelnych typu bialka = ('MIIIIIIII','MIIF')
@@ -74,15 +74,15 @@ def rysuj_szybko_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj):
     okno.columnconfigure(1, weight=6)
     okno.rowconfigure(0, weight=1)
     okno.rowconfigure(1, weight=1)
-    Dzielimy_na = math.ceil(len(lanc_Kodonow) / 10)
+    Dzielimy_na = math.ceil(len(lanc_kodonow) / 10)
     bialeczka = []
     poczatek = 0
-    jakdlugo = math.ceil(len(lanc_Kodonow) / Dzielimy_na)
+    jakdlugo = math.ceil(len(lanc_kodonow) / Dzielimy_na)
     if(Dzielimy_na<5): #jest to równoważne że długość jest mniejsza niż 50, jeśli jest mniejsza to dzielimy tak samo jak w funkcji rysuj_dziwnie_interface
         for x in range(Dzielimy_na):
-            bialeczka.append(lanc_Kodonow[poczatek:jakdlugo])
+            bialeczka.append(lanc_kodonow[poczatek:jakdlugo])
             poczatek = jakdlugo
-            jakdlugo += math.floor(len(lanc_Kodonow) / Dzielimy_na)
+            jakdlugo += math.floor(len(lanc_kodonow) / Dzielimy_na)
         i = 0
         k = 0
         obrazy=CTkScrollableFrame(okno,width=int((size[0]/31)*25),height=500)
@@ -104,7 +104,7 @@ def rysuj_szybko_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj):
             obraz.grid(row=i, column=0)
             i += 1
     else: #tworzymy 2 obrazki po 10 aminokwasów, wstawiamy 3 kropki i kolejne 2 po 10.
-        bialeczka=[lanc_Kodonow[0:10],lanc_Kodonow[10:20],lanc_Kodonow[len(lanc_Kodonow)-21:len(lanc_Kodonow)-11],lanc_Kodonow[len(lanc_Kodonow)-11:len(lanc_Kodonow)-1]]#tworzymy podzieloną liste białek
+        bialeczka=[lanc_kodonow[0:10],lanc_kodonow[10:20],lanc_kodonow[len(lanc_kodonow)-21:len(lanc_kodonow)-11],lanc_kodonow[len(lanc_kodonow)-11:len(lanc_kodonow)-1]]#tworzymy podzieloną liste białek
         i = 0
         k = 0
         obrazy=CTkScrollableFrame(okno,width=int((size[0]/31)*25),height=500)
@@ -146,12 +146,12 @@ def rysuj_szybko_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj):
             obraz.grid(row=i, column=0)
             i += 1
     #reszta widgetów
-    wrocButton = CTkButton(okno, text="Wroc", width=int((size[0]/31)*6), command=lambda: main.wczytaj_recznie(okno,lancpowrotny))
-    WykresyButton = CTkButton(okno, text="wykresy",width=int((size[0]/31)*6), command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow, lancpowrotny))
+    wrocButton = CTkButton(okno, text="Wroc", width=int((size[0]/31)*6), command=lambda: main.wczytaj_recznie(okno,lanc_powrotny))
+    WykresyButton = CTkButton(okno, text="wykresy",width=int((size[0]/31)*6), command=lambda: wykresy.wykresy(okno, Smiles, lanc_kodonow, lanc_powrotny))
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
     wrocButton.grid(row=0, column=1, sticky=W + E)
-def rysuj_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj): #funkcja rysująca cały łancuch polipeptydowy w jednym obrazku
+def rysuj_interface(okno, lanc_kodonow, lanc_powrotny,czy_podswietlaj): #funkcja rysująca cały łancuch polipeptydowy w jednym obrazku
     global size
     size = (okno.winfo_width(), okno.winfo_height())
     for widget in okno.winfo_children():  # czyscimy okno
@@ -159,7 +159,7 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj): #funkcja 
     okno.columnconfigure(0, weight=10)
     okno.columnconfigure(1, weight=3)
 
-    Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(lanc_Kodonow) #uzyskujemy wzór smiles
+    Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(lanc_kodonow) #uzyskujemy wzór smiles
     mol = Chem.MolFromSmiles(Smiles) #tworzymy obiekt mol
     rdCoordGen.AddCoords(mol) #uwzględniamy coordynaty 2D
     #rysujemy obrazek (z opcją podświetlania lub bez)
@@ -173,8 +173,8 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj): #funkcja 
         obraz = Draw.MolToImage(mol, size=(int(size[0]*10/13),int(size[1])))
     #wrzucamy widgety na okno, tworzymy przyciski
     wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int(size[0]*10/13),int(size[1])))
-    WrocButton = CTkButton(okno, text="wroc", command=lambda: main.wczytaj_recznie(okno, lancpowrotny),width=size[0]*3/13)
-    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy.wykresy(okno, Smiles,lanc_Kodonow, lancpowrotny))
+    WrocButton = CTkButton(okno, text="wroc", command=lambda: main.wczytaj_recznie(okno, lanc_powrotny),width=size[0]*3/13)
+    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy.wykresy(okno, Smiles,lanc_kodonow, lanc_powrotny))
     obraz = CTkLabel(okno, image=wzor_strukturalny, text="")
     obraz.grid(row=0, column=0, rowspan=6)
     WrocButton.grid(row=0, column=1,sticky=E+W)

@@ -53,7 +53,7 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
     plikButton = CTkButton(okno, text="Dane z Pliku", command=lambda: wczytaj_z_pliku(okno),width=int(size[0]*3/13))
     recznieButton = CTkButton(okno, text="Dane Ręcznie", command=lambda: wczytaj_recznie(okno, lancpoczatkowy="AUGAAUGCAUGUAGAUAGAUAGAUGUGA"))
     instrukcjeButton = CTkButton(okno, text="Instrukcja", command=lambda: instrukcja(okno))
-    opcjeButton = CTkButton(okno, text="Opcje", command=lambda: interfaceOpcje(okno))
+    opcjeButton = CTkButton(okno, text="Opcje", command=lambda: interface_opcje(okno))
     #rysuje przyciski
     plikButton.grid(row=1, column=0, sticky=W + E)
     recznieButton.grid(row=2, column=0, sticky=W + E)
@@ -83,8 +83,6 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
     #wrzucam rysunek w okno
     obraz = CTkLabel(okno, text="", image=img1)
     obraz.grid(row=0, column=1, rowspan=10,sticky=NW)
-
-
 
 
 def wczytaj_z_pliku(okno):  # funkcja wczytująca dane z pliku
@@ -162,7 +160,7 @@ def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy
     Bwidth = (size[0] / 15) * 12  # zmienna przechowująca szerokość naszej ramki
 
     lanc=Seq(wejscie.get()) #czysty lancuch wpisany
-    lanc1,lanc2,lanc3 = operacje_chemiczne.translacjaBezBugow(wejscie.get())#obrobione lancuchy(podzielne przez 3, zdebugowane, rodzielone na 3 podlinie)
+    lanc1,lanc2,lanc3 = operacje_chemiczne.translacja_bez_bugow(wejscie.get())#obrobione lancuchy(podzielne przez 3, zdebugowane, rodzielone na 3 podlinie)
     bialka1 = operacje_chemiczne.rozklad_na_bialka(lanc1) #3 łancuchy białek dla 3 przesunięć
     bialka2 = operacje_chemiczne.rozklad_na_bialka(lanc2)
     bialka3 =   operacje_chemiczne.rozklad_na_bialka(lanc3)
@@ -221,7 +219,8 @@ def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy
         x.gridbutton(i, 4) #funkcja klasy, działa jak zwykły grid
         i += 1
 
-def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
+
+def interface_opcje(okno):  # funkcja wczytująca interface opcji
     for widget in okno.winfo_children():
         widget.destroy()
     #ustawiamy wagi
@@ -257,11 +256,11 @@ def podswietlenie(okno):
     global czy_podswietlaj
     if (czy_podswietlaj == True):
         czy_podswietlaj = False
-        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (czy_podswietlaj == False):
         czy_podswietlaj = True
-        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
 
 
@@ -280,12 +279,12 @@ def zmien_tryb(okno):
     if (mode == "dark"):
         set_appearance_mode("light")
         mode = "light"
-        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (mode == "light"):
         set_appearance_mode("dark")
         mode = "dark"
-        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
 
 
@@ -295,17 +294,17 @@ def zmien_kolor(okno):
         set_default_color_theme("blue")
         base_color = "blue"
         print("XD")
-        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (base_color == "blue"):
         set_default_color_theme("green")
         base_color = "green"
-        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (base_color == "green"):
         set_default_color_theme("dark-blue")
         base_color = "dark-blue"
-        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
 
 
 def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
