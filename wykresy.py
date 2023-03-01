@@ -3,6 +3,12 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from Bio.SeqUtils.ProtParam import ProtParamData
 import operacje_chemiczne
 import main
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 
 def pH_bialka(lanc):
     analizuj = ProteinAnalysis(lanc)
@@ -25,42 +31,58 @@ def dane_wykres(lanc):
     dane = []
     #suwak = slider()    w przyszłosci funkcja do ustawiania drugiej zmiennej tego gowna na dole
     analizuj = ProteinAnalysis(lanc)        #nie ma za uj pojecia co to sa te skale ale brzmi madrze
-    dane.append(analizuj.protein_scale(ProtParamData.kd, 7))         #indeks hydrofobowy
-    dane.append(analizuj.protein_scale(ProtParamData.em, 7))         #surface accessibility
-    dane.append(analizuj.protein_scale(ProtParamData.Flex, 7))       #Normalized flexibility parameters
-    dane.append(analizuj.protein_scale(ProtParamData.ja, 7))         #Janin Interior to surface transfer energy scale
-    dane.append(analizuj.protein_scale(operacje_chemiczne.gra, 7))   #instability index by Grantham R.
-    dane.append(len(dane[0]))   #pomaga stworzyc oś X w wykresie
+    dane.append(analizuj.protein_scale(ProtParamData.kd, 3))         #indeks hydrofobowy
+    dane.append(analizuj.protein_scale(ProtParamData.em, 3))         #surface accessibility
+    dane.append(analizuj.protein_scale(ProtParamData.Flex, 3))       #Normalized flexibility parameters
+    dane.append(analizuj.protein_scale(ProtParamData.ja, 3))         #Janin Interior to surface transfer energy scale
+    dane.append(analizuj.protein_scale(operacje_chemiczne.gra, 3))   #instability index by Grantham R.
+    dane.append(len(dane[0]))  #pomaga stworzyc oś X w wykresie
     return dane
 
-def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykresów
 
-    for widget in okno.winfo_children():
+def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykresów
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
+    for widget in okno.winfo_children():  # czyscimy okno
         widget.destroy()
+    okno.columnconfigure(0, weight=100)
+    okno.columnconfigure(1, weight=2)
+
 
     analizuj = ProteinAnalysis(lanc_kodonow)  # tablica do analizowania bialekdane_kwasy = []
-    dane_kwasy=[]
-    dane_kwasy.append(analizuj.count_amino_acids())   #ilosc kazdego z kwasow
-    dane_kwasy.append(analizuj.get_amino_acids_percent())   #procent kazdego z kwasow
-    # pojedyncze wartości
-    dw = []
+    dw = [] #pojedyncze wartości
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
-    dw.append(analizuj.isoelectric_point())
-    dw.append(pH_bialka(lanc_Kodonow))
     dw.append(analizuj.instability_index())
+    dw.append(analizuj.isoelectric_point())
+    dw.append(pH_bialka(lanc_kodonow))
     if (analizuj.instability_index() <= 40):
         dw.append("Białko stabilne")
     elif (analizuj.instability_index() > 40):
         dw.append("Białko niestabilne")
     print(lanc_powrotny)
-    print(dane_kwasy)
     print(dw)
+    print(dane_wykres(lanc_kodonow))
+    dane_kwasy1 = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
+    lista = []
+    for i in dane_kwasy1:   dane_kwasy1[i] = dane_kwasy1[i] * 100
+    for i in dane_kwasy1:
+        lista.append(dane_kwasy1.get(i))
+    dane = {'Aminokwas':['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y',],
+            'Częstotliwość występowania':lista}
+    print(lista)
+    figure1 = plt.Figure(figsize=(6, 5), dpi=100)
+    ax1 = figure1.add_subplot(111)
+    bar1 = FigureCanvasTkAgg(figure1, okno)
+    bar1.get_tk_widget().grid(row=1, column=0)
+    df1 = pd.DataFrame(dane)
+    df1 = df1[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
+    df1.plot(kind='bar', legend=True, ax=ax1)
+    ax1.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
 
-    napis = CTkLabel(okno, text=wzor, width=100)
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lanc_powrotny))
-    AtomyButton = CTkButton(okno, text="Ilość Atomów", command=lambda: WypiszAtomy(okno,wzor, lanc_kodonow, lanc_powrotny))
-    napis.grid(row=0, column=0)
-    returnButton.grid(row=1, column=0)
-    AtomyButton.grid(row=2, column=0)
-    
+    napis = CTkLabel(okno, text=wzor, width=550)
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lanc_powrotny), width=100)
+    AtomyButton = CTkButton(okno, text="Ilość Atomów", command=lambda: WypiszAtomy(okno,wzor, lanc_kodonow, lanc_powrotny), width=100)
+    napis.grid(row=0, column=0, sticky=W+E)
+    returnButton.grid(row=0, column=1, sticky=W+E)
+    AtomyButton.grid(row=1, column=1, sticky=W+E)
