@@ -47,7 +47,8 @@ def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykr
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
     dw.append(analizuj.isoelectric_point())
-    dw.append(pH_bialka(lanc_powrotny))
+    dw.append(pH_bialka(lanc_Kodonow))
+    dw.append(analizuj.instability_index())
     if (analizuj.instability_index() <= 40):
         dw.append("Białko stabilne")
     elif (analizuj.instability_index() > 40):
