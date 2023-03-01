@@ -70,7 +70,7 @@ def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykr
         lista.append(dane_kwasy1.get(i))
     dane = {'Aminokwas':['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y',],
             'Częstotliwość występowania':lista}
-    figure1 = plt.Figure(figsize=(8, 4), dpi=100)
+    figure1 = plt.Figure(figsize=(12, 4), dpi=50)
     ax1 = figure1.add_subplot(1,1,1)
     bar1 = FigureCanvasTkAgg(figure1, okno)
     bar1.get_tk_widget().grid(row=1, column=0)
