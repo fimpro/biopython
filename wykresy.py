@@ -70,14 +70,14 @@ def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykr
         lista.append(dane_kwasy1.get(i))
     dane = {'Aminokwas':['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y',],
             'Częstotliwość występowania':lista}
-    figure1 = plt.Figure(figsize=(12, 4), dpi=50)
-    ax1 = figure1.add_subplot(1,1,1)
-    bar1 = FigureCanvasTkAgg(figure1, okno)
-    bar1.get_tk_widget().grid(row=1, column=0)
-    df1 = pd.DataFrame(dane)
-    df1 = df1[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
-    df1.plot(kind='bar', legend=True, ax=ax1)
-    ax1.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
+    figure1 = plt.Figure(figsize=(12, 4), dpi=50) #rozmiar figury przeskalowany na piksele?
+    ax1 = figure1.add_subplot(1,1,1) #rząd, kolumna, index
+    bar1 = FigureCanvasTkAgg(figure1, okno) #idk
+    bar1.get_tk_widget().grid(row=1, column=0) #położenie widgeta?
+    df1 = pd.DataFrame(dane) #konwersja danych
+    df1 = df1[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum() #pogrupowanie danych
+    df1.plot(kind='bar', legend=True, ax=ax1) #narysowanie wykresu
+    ax1.set_title('Częstotliwość występowania aminokwasów w białku w procentach') #tytuł wykresu
 
     napis = CTkLabel(okno, text=wzor, width=550)
     returnButton = CTkButton(okno, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lanc_powrotny), width=100)
