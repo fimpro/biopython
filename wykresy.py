@@ -83,20 +83,20 @@ def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykr
     Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
 
     dane_do_wykresu = dane_wykres(lanc_kodonow)
-    danedo1=(dane_do_wykresu[0])
-    danedo2=(dane_do_wykresu[1])
-    danedo3=(dane_do_wykresu[2])
-    danedo4=(dane_do_wykresu[3])
-    danedo5=(dane_do_wykresu[4])
+    wartości_hydrofobia=(dane_do_wykresu[0])
+    wartości_dostępność=(dane_do_wykresu[1])
+    wartości_parametry=(dane_do_wykresu[2])
+    wartości_skala=(dane_do_wykresu[3])
+    wartości_niestabilność=(dane_do_wykresu[4])
     dlugosc=len(danedo1)
     aminokwas=[]
     for x in range(dlugosc):
         aminokwas.append(x)
-    dane_hydrofobia = {'Aminokwasy': aminokwas, 'Indeks hydrofobowy': danedo1}
-    dane_dostępność = {'Aminokwasy': aminokwas, 'Dostępność powierzchniowa': danedo2}
-    dane_parametry = {'Aminokwasy': aminokwas, 'Zogólnione parametry elastyczności': danedo3}
-    dane_skala = {'Aminokwasy': aminokwas, 'Skala Janin transferu energii': danedo4}
-    dane_niestabilność = {'Aminokwasy': aminokwas, 'indeks niestabilności Granthama R.': danedo5}
+    dane_hydrofobia = {'Aminokwasy': aminokwas, 'Indeks hydrofobowy': wartości_hydrofobia}
+    dane_dostępność = {'Aminokwasy': aminokwas, 'Dostępność powierzchniowa': wartości_dostępność}
+    dane_parametry = {'Aminokwasy': aminokwas, 'Zogólnione parametry elastyczności': wartości_parametry}
+    dane_skala = {'Aminokwasy': aminokwas, 'Skala Janin transferu energii': wartości_skala}
+    dane_niestabilność = {'Aminokwasy': aminokwas, 'indeks niestabilności Granthama R.': wartości_niestabilność}
     Obraz_cech = plt.Figure(figsize=(12, 4), dpi=50)
     Wypisz_wykres_cech = Obraz_cech.add_subplot(2, 2, 1)
     Wykres_szczegółowy = FigureCanvasTkAgg(Obraz_cech, okno)
