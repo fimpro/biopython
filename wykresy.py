@@ -1,3 +1,9 @@
+from customtkinter import *
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+from Bio.SeqUtils.ProtParam import ProtParamData
+import operacje_chemiczne
+import main
+
 def pH_bialka(lanc):
     analizuj = ProteinAnalysis(lanc)
     pH = (analizuj.isoelectric_point())
