@@ -14,6 +14,13 @@ def pH_bialka(lanc):
     elif pH > 6.5:
         return "zasadowe"
 
+def WypiszAtomy(okno, wzor,lanc_powrotny, lanc_kodonow):
+    for widget in okno.winfo_children():
+        widget.destroy()
+    operacje_chemiczne.listaAtomow(wzor)
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: wykresy(okno,wzor, lanc_powrotny, lanc_kodonow))
+    returnButton.grid(row=1, column=0)
+
 def dane_wykres(lanc):
     dane = []
     #suwak = slider()    w przyszłosci funkcja do ustawiania drugiej zmiennej tego gowna na dole
@@ -26,13 +33,13 @@ def dane_wykres(lanc):
     dane.append(len(dane[0]))   #pomaga stworzyc oś X w wykresie
     return dane
 
-def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykresów
+def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykresów
 
     for widget in okno.winfo_children():
         widget.destroy()
 
-    analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
-    dane_kwasy = []
+    analizuj = ProteinAnalysis(lanc_kodonow)  # tablica do analizowania bialekdane_kwasy = []
+    dane_kwasy=[]
     dane_kwasy.append(analizuj.count_amino_acids())   #ilosc kazdego z kwasow
     dane_kwasy.append(analizuj.get_amino_acids_percent())   #procent kazdego z kwasow
     # pojedyncze wartości
@@ -40,23 +47,19 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
     dw.append(analizuj.isoelectric_point())
-    dw.append(pH_bialka(lancpowrotny))
+    dw.append(pH_bialka(lanc_powrotny))
     if (analizuj.instability_index() <= 40):
         dw.append("Białko stabilne")
     elif (analizuj.instability_index() > 40):
         dw.append("Białko niestabilne")
-    print(dane_wykres(lancpowrotny))
+    print(lanc_powrotny)
+    print(dane_kwasy)
+    print(dw)
 
-    napis = CTkLabel(okno, text="", width=100)    #dopisać wzór tam gdzie puste!!!
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: rysuj_interface(okno, lanc_Kodonow, lancpowrotny))
-    AtomyButton = CTkButton(okno, text="Ilość Atomów", command=lambda: WypiszAtomy(okno,wzor, lanc_Kodonow, lancpowrotny))
+    napis = CTkLabel(okno, text=wzor, width=100)
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lanc_powrotny))
+    AtomyButton = CTkButton(okno, text="Ilość Atomów", command=lambda: WypiszAtomy(okno,wzor, lanc_kodonow, lanc_powrotny))
     napis.grid(row=0, column=0)
     returnButton.grid(row=1, column=0)
     AtomyButton.grid(row=2, column=0)
-
-def WypiszAtomy(okno, wzor,lancpowrotny, lanc_Kodonow):
-    for widget in okno.winfo_children():
-        widget.destroy()
-    operacje_chemiczne.listaAtomow(wzor)
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: wykresy(okno,wzor, lanc_Kodonow, lancpowrotny))
-    returnButton.grid(row=1, column=0)
+    
