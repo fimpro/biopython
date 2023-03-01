@@ -28,15 +28,19 @@ def WypiszAtomy(okno, wzor,lanc_powrotny, lanc_kodonow):
     returnButton.grid(row=1, column=0)
 
 def dane_wykres(lanc):
-    dane = []
+    dane1= []
+    dane2=[]
+    dane3=[]
+    dane4=[]
+    dane5=[]
     #suwak = slider()    w przyszłosci funkcja do ustawiania drugiej zmiennej tego gowna na dole
     analizuj = ProteinAnalysis(lanc)        #nie ma za uj pojecia co to sa te skale ale brzmi madrze
-    dane.append(analizuj.protein_scale(ProtParamData.kd, 3))         #indeks hydrofobowy
-    dane.append(analizuj.protein_scale(ProtParamData.em, 3))         #surface accessibility
-    dane.append(analizuj.protein_scale(ProtParamData.Flex, 3))       #Normalized flexibility parameters
-    dane.append(analizuj.protein_scale(ProtParamData.ja, 3))         #Janin Interior to surface transfer energy scale
-    dane.append(analizuj.protein_scale(operacje_chemiczne.gra, 3))   #instability index by Grantham R.
-    dane.append(len(dane[0]))  #pomaga stworzyc oś X w wykresie
+    dane1=analizuj.protein_scale(ProtParamData.kd, 3)         #indeks hydrofobowy
+    dane2analizuj.protein_scale(ProtParamData.em, 3)          #surface accessibility
+    dane3=analizuj.protein_scale(ProtParamData.Flex, 3)       #Normalized flexibility parameters
+    dane4=analizuj.protein_scale(ProtParamData.ja, 3)         #Janin Interior to surface transfer energy scale
+    dane5=analizuj.protein_scale(operacje_chemiczne.gra, 3)   #instability index by Grantham R.
+    #dane.append(len(dane[0]))  #pomaga stworzyc oś X w wykresie
     return dane
 
 
