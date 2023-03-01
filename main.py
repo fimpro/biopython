@@ -19,7 +19,7 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
         widget.destroy()
     global size #potrzebuje wielkosci, żeby widgety miały odpowiednie wymiary
     size=(okno.winfo_width(),okno.winfo_height())
-    if(size==(200,200)): #przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
+    if(size[0]<650 or size[1]<500): #przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
         size=(650,500)
     #2 fory czyszczą ustawienie wagi kolumn i wierszy
     for x in range(10): #
@@ -54,15 +54,15 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
         hit_bonds.append(x)
     atomy = (0, ostatni)
     #ostatecznie go podświetlam
-    # if (czy_podswietlaj):
-    #     obrazStartowy = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, highlightColor=((0, 1, 0)),
-    #                                     size=(int(size[0]*10/13),int(size[1]))) #wyrażenie dostosowywuje rozmiar obrazka do okna, niestety nie dynamicznie :(
-    # else:
-    #     obrazStartowy = Draw.MolToImage(mol, size=(500, 500))
-    # img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(500, 500))
-    # #wrzucam rysunek w okno
-    # obraz = CTkLabel(okno, text="", image=img1)
-    # obraz.grid(row=0, column=1, rowspan=10,sticky=NW)
+    if (czy_podswietlaj):
+         obrazStartowy = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, highlightColor=((0, 1, 0)),
+                                         size=(int(size[0]*10/13),int(size[1]))) #wyrażenie dostosowywuje rozmiar obrazka do okna, niestety nie dynamicznie :(
+    else:
+         obrazStartowy = Draw.MolToImage(mol, size=(500, 500))
+    img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(500, 500))
+    #wrzucam rysunek w okno
+    obraz = CTkLabel(okno, text="", image=img1)
+    obraz.grid(row=0, column=1, rowspan=10,sticky=NW)
 
 
 def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "palca"
@@ -80,20 +80,41 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
     for x in range(5):
         okno.columnconfigure(x, weight=2)
     okno.columnconfigure(5, weight=3)
+    okno.rowconfigure(0, weight=1)
     okno.rowconfigure(1,weight=1)
+    okno.rowconfigure(2, weight=5)
 
     #tworze elementy okna
     wejscie = CTkEntry(okno, width=((size[0]*8)/15))
     wejscie.insert(0, lancpoczatkowy)
 
-    opis = CTkLabel(okno, text="Wpisz kod nici Rna", width=((size[0]*2)/15))
+    opis = CTkLabel(okno, text="Wpisz kod nici RNA lub DNA:", width=((size[0]*2)/15))
     szukajButton = CTkButton(okno, text="Szukaj Białek", width=((size[0]*3)/15), command=lambda: otwieranie_testowe(okno, file_path, wejscie.get())) #wyszukuje bialka w wpisanym lancuchu, i rysuje je w ramce
     wrocButton = CTkButton(okno, text="Wroc", width=15, command=lambda: interfejs(okno))
 
+    wzor, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow("MPPPPPPPNACR")
+    # tworze obiekt molecule który później rysuje
+    mol = Chem.MolFromSmiles(wzor)
+    rdCoordGen.AddCoords(mol)
+    # podświetlam łańcuch główny
+    hit_bonds = []
+    for x in range(ostatni):
+        hit_bonds.append(x)
+    atomy = (0, ostatni)
+    # ostatecznie go podświetlam
+    if (czy_podswietlaj):
+        obrazStartowy = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, highlightColor=((0, 1, 0)),
+                                        size=(int(size[0] * 10/13), int(size[1])-75))  # wyrażenie dostosowywuje rozmiar obrazka do okna, niestety nie dynamicznie :(
+    else:
+        obrazStartowy = Draw.MolToImage(mol, size=(int(size[0] *10/13), int(size[1])-75))
+    img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(int(size[0] * 10/13), int(size[1])-75))
+    # wrzucam rysunek w okno
+    obraz = CTkLabel(okno, text="", image=img1)
+    obraz.grid(row=2, column=0,columnspan=4, sticky=N)
     opis.grid(row=0, column=0,sticky=W+E)
-    wejscie.grid(row=0, column=1, columnspan=4,sticky=W+E)
-    szukajButton.grid(row=0, column=5,sticky=W+E)
-    wrocButton.grid(row=1, column=5,sticky=W+E)
+    wejscie.grid(row=1, column=0, columnspan=4,sticky=W+E)
+    szukajButton.grid(row=1, column=5,sticky=W+E)
+    wrocButton.grid(row=2, column=5,sticky=W+E)
 
 
 
@@ -107,21 +128,42 @@ def wczytaj_z_pliku(okno):  #funkcja wybierająca plik
     #elementy okna:
     napisTytul = CTkLabel(okno, text="wpisz lokalizacje pliku:")
     sciezkaWejscie = CTkEntry(okno, width=500)
-    przyciskPrzegladaj = CTkButton(okno, text="przegladaj", command=lambda: przegladaj(okno))
+    przyciskPrzegladaj = CTkButton(okno, text="Przegladaj", command=lambda: przegladaj(okno))
     przyciskSzukaj = CTkButton(okno, text="Szukaj", command=lambda: otwieranie_pliku(okno, sciezkaWejscie.get()))
     przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: interfejs(okno))
+    wzor, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow("MHFVDR")
+    # tworze obiekt molecule który później rysuje
+    mol = Chem.MolFromSmiles(wzor)
+    rdCoordGen.AddCoords(mol)
+    # podświetlam łańcuch główny
+    hit_bonds = []
+    for x in range(ostatni):
+        hit_bonds.append(x)
+    atomy = (0, ostatni)
+    # ostatecznie go podświetlam
+    if (czy_podswietlaj):
+        obrazStartowy = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, highlightColor=((0, 1, 0)),
+                                        size=(int(size[0] * 10 / 13), int(size[
+                                                                              1]) - 100))  # wyrażenie dostosowywuje rozmiar obrazka do okna, niestety nie dynamicznie :(
+    else:
+        obrazStartowy = Draw.MolToImage(mol, size=(int(size[0] * 10 / 13), int(size[1]) - 100))
+    img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy,
+                    size=(int(size[0] * 10 / 13), int(size[1]) - 100))
+    # wrzucam rysunek w okno
+    obraz = CTkLabel(okno, text="", image=img1)
+    obraz.grid(row=3, column=0, columnspan=4, sticky=N)
     napisTytul.grid(row=0, column=0, sticky=W+E)
-    sciezkaWejscie.grid(row=1, column=0, columnspan=5, sticky=W+E)
-    przyciskPrzegladaj.grid(row=2, column=6, sticky=W+E)
-    przyciskSzukaj.grid(row=1, column=6, sticky=W+E)
-    przyciskWroc.grid(row=0, column=6, sticky=W+E)
-    def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
+    sciezkaWejscie.grid(row=1, column=0,rowspan=2, columnspan=5, sticky=W+E)
+    przyciskPrzegladaj.grid(row=1, column=6,pady=3, sticky=W+E)
+    przyciskSzukaj.grid(row=2, column=6,pady=3, sticky=W+E)
+    przyciskWroc.grid(row=3, column=6, sticky=W+E)
+def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
 
-        file_path = filedialog.askopenfilename(filetypes=[("Pliki tekstowe", "*.txt"), ("Pliki FASTA", "*.fasta")])
-        if(file_path==""):
-            wczytaj_z_pliku(okno)
-        else:
-            otwieranie_pliku(okno, file_path)
+    file_path = filedialog.askopenfilename(initialdir="/", title="Wybierz Plik",filetypes=[("Fasta file", "*.fasta")])
+    if(file_path==""):
+        wczytaj_z_pliku(okno)
+    else:
+        otwieranie_pliku(okno, file_path)
 
 def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pliku
     for widget in okno.winfo_children():
@@ -178,44 +220,46 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
                 i+=1
 
 def otwieranie_testowe (okno, file_path, sequence):
-    def rysuj_przyciski(i, bialka):
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
+    def rysuj_przyciski(i, bialka,przesuniecie):
         for x in bialka:
             if (len(x) > 10):
-                x = CTkLabel(ramka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:0"))
-                x.grid(row=i, column=0)
+                Label = CTkLabel(ramka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:"+przesuniecie))
+                Label.grid(row=i, column=0)
             else:
-                z = CTkLabel(ramka, text=(x + " P:0"))
-                z.grid(row=i, column=0)
-            z = CTkButton(ramka, text="G.szybko",
+                Label = CTkLabel(ramka, text=(x + " P:"+przesuniecie))
+                Label.grid(row=i, column=0)
+            Button = CTkButton(ramka, text="G.szybko",width=(size[0] / 15) * 2,
                           command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, lanc, czy_podswietlaj, file_path))
-            z.grid(row=i, column=1, sticky=W+E)
-            z = CTkButton(ramka, text="Generuj",
+            Button.grid(row=i, column=1, sticky=W+E)
+            Button = CTkButton(ramka, text="Generuj",width=(size[0] / 15) * 2,
                           command=lambda y=x: rysowania.rysuj_interface(okno, y, lanc, czy_podswietlaj, file_path))
-            z.grid(row=i, column=2, sticky=W+E)
-            z = CTkButton(ramka, text="G.dziwnie",
+            Button.grid(row=i, column=2, sticky=W+E)
+            Button = CTkButton(ramka, text="G.dziwnie",width=(size[0] / 15) * 2,
                           command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, lanc, czy_podswietlaj, file_path))
-            z.grid(row=i, column=3, sticky=W+E)
+            Button.grid(row=i, column=3, sticky=W+E)
             i += 1
         return i
     global czy_podswietlaj
     for widget in okno.winfo_children():
         widget.destroy()
     #tworzenie ramki:
-    size = (okno.winfo_width(), okno.winfo_height())
+
     ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1] - 50))
     Bwidth = (size[0] / 15) * 12
     ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
     for x in range(5):
         ramka.columnconfigure(x, weight=1)
     lanc = Seq(sequence)  # czysty lancuch
-    lanc1, lanc2, lanc3 = operacje_chemiczne.translacjaBezBugow(sequence)  # obrobione lancuchy
+    lanc1, lanc2, lanc3 = operacje_chemiczne.translacja_bez_bugow(sequence)  # obrobione lancuchy
     bialka1 = operacje_chemiczne.rozklad_na_bialka(lanc1)  # 3 łancuchy białek dla 3 przesunięć
     bialka2 = operacje_chemiczne.rozklad_na_bialka(lanc2)
     bialka3 = operacje_chemiczne.rozklad_na_bialka(lanc3)
     i = 0
-    i = rysuj_przyciski(i, bialka1)
-    i = rysuj_przyciski(i, bialka2)
-    i = rysuj_przyciski(i, bialka3)
+    i = rysuj_przyciski(i, bialka1,"0")
+    i = rysuj_przyciski(i, bialka2,"1")
+    i = rysuj_przyciski(i, bialka3,"2")
     opis = CTkLabel(okno, text="Wybierz co chcesz przeanalizować:")
     if(file_path=="x"):
         przycisk_wroc = CTkButton(okno, text="wstecz", command=lambda: wczytaj_recznie(okno, sequence))
@@ -224,8 +268,6 @@ def otwieranie_testowe (okno, file_path, sequence):
         przycisk_wroc = CTkButton(okno, text="wstecz", command=lambda: otwieranie_pliku(okno, file_path))
         przycisk_wroc.grid(row=0, column=4, sticky=W+E)
     opis.grid(row=0, column=0, sticky=W+E)
-
-
 
 
 def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
