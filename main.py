@@ -39,7 +39,7 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
         widget.destroy()
     global size #potrzebuje wielkosci, żeby widgety miały odpowiednie wymiary
     size=(okno.winfo_width(),okno.winfo_height())
-    if(size==(200,200)): #przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
+    if(size[0]<650  or size[1]<500): #przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
         size=(650,500)
     #2 fory czyszczą ustawienie wagi kolumn i wierszy
     for x in range(10): #
