@@ -40,6 +40,8 @@ def dane_wykres(lanc):
     return dane
 
 
+
+
 def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykresów
     global size
     size = (okno.winfo_width(), okno.winfo_height())
@@ -70,14 +72,56 @@ def wykresy(okno, wzor, lanc_kodonow, lanc_powrotny):  # robocza funkcja do wykr
         lista.append(dane_kwasy1.get(i))
     dane = {'Aminokwas':['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y',],
             'Częstotliwość występowania':lista}
-    figure1 = plt.Figure(figsize=(12, 4), dpi=50) #rozmiar figury przeskalowany na piksele?
-    ax1 = figure1.add_subplot(1,1,1) #rząd, kolumna, index
-    bar1 = FigureCanvasTkAgg(figure1, okno) #idk
-    bar1.get_tk_widget().grid(row=1, column=0) #położenie widgeta?
-    df1 = pd.DataFrame(dane) #konwersja danych
-    df1 = df1[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum() #pogrupowanie danych
-    df1.plot(kind='bar', legend=True, ax=ax1) #narysowanie wykresu
-    ax1.set_title('Częstotliwość występowania aminokwasów w białku w procentach') #tytuł wykresu
+
+    figure1 = plt.Figure(figsize=(12, 4), dpi=50)
+    ax1 = figure1.add_subplot(1,1,1)
+    bar1 = FigureCanvasTkAgg(figure1, okno)
+    bar1.get_tk_widget().grid(row=1, column=0)
+    df1 = pd.DataFrame(dane)
+    df1 = df1[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
+    df1.plot(kind='bar', legend=True, ax=ax1)
+    ax1.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
+
+    dane_do_wykresu = dane_wykres(lanc_kodonow)
+    danedo1=(dane_do_wykresu[0])
+    danedo2=(dane_do_wykresu[1])
+    danedo3=(dane_do_wykresu[2])
+    danedo4=(dane_do_wykresu[3])
+    danedo5=(dane_do_wykresu[4])
+    dlugosc=len(danedo1)
+    LISTA=[]
+    for x in range(dlugosc):
+        LISTA.append(x)
+    dane1 = {'Aminokwasy': LISTA, 'Indeks hydrofobowy': danedo1}
+    dane2 = {'Aminokwasy': LISTA, 'Surface accesibility': danedo2}
+    dane3 = {'Aminokwasy': LISTA, 'Normalized flexibility parameters': danedo3}
+    dane4 = {'Aminokwasy': LISTA, 'Janin Interior to surface transfer energy scale': danedo4}
+    dane5 = {'Aminokwasy': LISTA, 'instability index by Grantham R.': danedo5}
+    figure2 = plt.Figure(figsize=(12, 4), dpi=50)
+    ax2 = figure2.add_subplot(2, 2, 1)
+    print(dane1)
+    print(dane2)
+    print(dane3)
+    print(dane4)
+    print(dane5)
+    bar2 = FigureCanvasTkAgg(figure2, okno)
+    bar2.get_tk_widget().grid(row=2, column=0)
+    df2 = pd.DataFrame(dane1)
+    df2 = df2[['Aminokwasy', 'Indeks hydrofobowy']].groupby('Aminokwasy').sum()
+    df2.plot(kind='line', legend=True, ax=ax2)
+    df3 = pd.DataFrame(dane2)
+    df3 = df3[['Aminokwasy', 'Surface accesibility']].groupby('Aminokwasy').sum()
+    df3.plot(kind='line', legend=True, ax=ax2)
+    df4 = pd.DataFrame(dane3)
+    df4 = df4[['Aminokwasy', 'Normalized flexibility parameters']].groupby('Aminokwasy').sum()
+    df4.plot(kind='line', legend=True, ax=ax2)
+    df5 = pd.DataFrame(dane4)
+    df5 = df5[['Aminokwasy', 'Janin Interior to surface transfer energy scale']].groupby('Aminokwasy').sum()
+    df5.plot(kind='line', legend=True, ax=ax2)
+    df6 = pd.DataFrame(dane5)
+    df6 = df6[['Aminokwasy', 'instability index by Grantham R.']].groupby('Aminokwasy').sum()
+    df6.plot(kind='line', legend=True, ax=ax2)
+    ax2.set_title('bekawchuj')
 
     napis = CTkLabel(okno, text=wzor, width=550)
     returnButton = CTkButton(okno, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lanc_powrotny), width=100)
