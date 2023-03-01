@@ -1,4 +1,4 @@
-
+from Bio import SeqIO
 from Bio.Seq import Seq
 from customtkinter import *
 from rdkit import Chem
@@ -13,33 +13,13 @@ mode = "dark"  # zmienna przechowująca tryb aplikacji
 base_color = "dark-blue"
 czy_podswietlaj = True
 
-class przycisk_dane():  # klasa, która tworzy przycisk ctk z zapamiętaniem danych. Używam do zapisu danych z fora w przycisku (rozwiązuje errora)
-    def __init__(self,okno, oknofunkcja, zwiazek, lanc,czy):
-        self.przycisk = CTkButton(okno, text="Generuj", command=lambda: rysowania.rysuj_interface(oknofunkcja, zwiazek, lanc,czy))
-
-    def gridbutton(self, x, y):
-        self.przycisk.grid(row=x, column=y,sticky=E+W)
-class przycisk_szczegol_dane():  # ten sam przycisk co na gorze tylko z inna funkcja
-    def __init__(self, okno, oknofunkcja, zwiazek, lanc,czy):
-        self.przycisk = CTkButton(okno, text="G. Szczegółowo",
-                                  command=lambda: rysowania.rysuj_dziwnie_interface(oknofunkcja, zwiazek, lanc,czy))
-
-    def gridbutton(self, x, y):
-        self.przycisk.grid(row=x, column=y,sticky=E+W)
-class przycisk_szybkie_dane():  # ten sam przycisk co na gorze tylko z inna funkcja
-    def __init__(self, okno, oknofunkcja, zwiazek, lanc,czy):
-        self.przycisk = CTkButton(okno, text="G. Szybko",
-                                  command=lambda: rysowania.rysuj_szybko_interface(oknofunkcja, zwiazek, lanc,czy))
-
-    def gridbutton(self, x, y):
-        self.przycisk.grid(row=x, column=y,sticky=E+W)
 
 def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu widoczne po włączeniu
     for widget in okno.winfo_children():
         widget.destroy()
     global size #potrzebuje wielkosci, żeby widgety miały odpowiednie wymiary
     size=(okno.winfo_width(),okno.winfo_height())
-    if(size[0]<650  or size[1]<500): #przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
+    if(size==(200,200)): #przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
         size=(650,500)
     #2 fory czyszczą ustawienie wagi kolumn i wierszy
     for x in range(10): #
@@ -53,7 +33,7 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
     plikButton = CTkButton(okno, text="Dane z Pliku", command=lambda: wczytaj_z_pliku(okno),width=int(size[0]*3/13))
     recznieButton = CTkButton(okno, text="Dane Ręcznie", command=lambda: wczytaj_recznie(okno, lancpoczatkowy="AUGAAUGCAUGUAGAUAGAUAGAUGUGA"))
     instrukcjeButton = CTkButton(okno, text="Instrukcja", command=lambda: instrukcja(okno))
-    opcjeButton = CTkButton(okno, text="Opcje", command=lambda: interface_opcje(okno))
+    opcjeButton = CTkButton(okno, text="Opcje", command=lambda: interfaceOpcje(okno))
     #rysuje przyciski
     plikButton.grid(row=1, column=0, sticky=W + E)
     recznieButton.grid(row=2, column=0, sticky=W + E)
@@ -74,56 +54,19 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
         hit_bonds.append(x)
     atomy = (0, ostatni)
     #ostatecznie go podświetlam
-    if (czy_podswietlaj):
-        obrazStartowy = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, highlightColor=((0, 1, 0)),
-                                        size=(int(size[0]*10/13),int(size[1]))) #wyrażenie dostosowywuje rozmiar obrazka do okna, niestety nie dynamicznie :(
-    else:
-        obrazStartowy = Draw.MolToImage(mol, size=(int(size[0]*10/13),int(size[1])))
-    img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(int(size[0]*10/13),int(size[1])))
-    #wrzucam rysunek w okno
-    obraz = CTkLabel(okno, text="", image=img1)
-    obraz.grid(row=0, column=1, rowspan=10,sticky=NW)
-
-
-def wczytaj_z_pliku(okno):  # funkcja wczytująca dane z pliku
-    for widget in okno.winfo_children():
-        widget.destroy()
-    global size
-    size=(okno.winfo_width(), okno.winfo_height())
-    #czyszcze i ustawiam nowe wagi kolumn
-    for x in range(10):
-        okno.columnconfigure(x, weight=0)
-    for x in range(10):
-        okno.rowconfigure(x, weight=0)
-    for x in range(1,4):
-        okno.rowconfigure(x, weight=1)
-    for x in range(6):
-        okno.columnconfigure(x, weight=1)
-    #tworze przyciski, i pole wejsciowe:
-    napisTytul = CTkLabel(okno, text="wpisz lokalizacje pliku:")
-    sciezkaWejscie = CTkEntry(okno, width=(size[0]/6)*5)
-    przyciskPrzegladaj = CTkButton(okno, text="przegladaj",width=(size[0]/6), command=lambda: przegladaj(sciezkaWejscie)) #otwiera możliwość wyboru pliku z windowsowego explorera
-    przyciskSzukaj = CTkButton(okno, text="Szukaj", command=lambda: szukaj_z_pliku())
-    przyciskWroc = CTkButton(okno, text="Wróc", command=lambda: interfejs(okno)) #wraca do menu głównego
-    #wrzucam widgety na okno
-    napisTytul.grid(row=0, column=0,sticky=W+E)
-    sciezkaWejscie.grid(row=1, column=0, columnspan=5,sticky=W+E+N)
-    przyciskPrzegladaj.grid(row=1, column=5,sticky=W+E+N)
-    przyciskSzukaj.grid(row=2, column=5,sticky=W+E+N)
-    przyciskWroc.grid(row=3, column=5,sticky=W+E+N)
-
-
-def przegladaj(wejscie):
-    filename = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a File",
-                                          filetypes=(("Text files", "*.txt*"), ("all files", "*.*"))) #funkcja otwierająca wyszukiwarke plików
-    wejscie.insert(0, filename)
-
-
-def szukaj_z_pliku():
-    print("hendorzyc disa psa syna diabla")
+    # if (czy_podswietlaj):
+    #     obrazStartowy = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, highlightColor=((0, 1, 0)),
+    #                                     size=(int(size[0]*10/13),int(size[1]))) #wyrażenie dostosowywuje rozmiar obrazka do okna, niestety nie dynamicznie :(
+    # else:
+    #     obrazStartowy = Draw.MolToImage(mol, size=(500, 500))
+    # img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(500, 500))
+    # #wrzucam rysunek w okno
+    # obraz = CTkLabel(okno, text="", image=img1)
+    # obraz.grid(row=0, column=1, rowspan=10,sticky=NW)
 
 
 def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "palca"
+    file_path = "x"
     #czyszcze okno
     for widget in okno.winfo_children():
         widget.destroy()
@@ -142,9 +85,9 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
     #tworze elementy okna
     wejscie = CTkEntry(okno, width=((size[0]*8)/15))
     wejscie.insert(0, lancpoczatkowy)
-    szukaj_interface(okno, wejscie)
+
     opis = CTkLabel(okno, text="Wpisz kod nici Rna", width=((size[0]*2)/15))
-    szukajButton = CTkButton(okno, text="Szukaj Białek", width=((size[0]*3)/15), command=lambda: szukaj_interface(okno, wejscie)) #wyszukuje bialka w wpisanym lancuchu, i rysuje je w ramce
+    szukajButton = CTkButton(okno, text="Szukaj Białek", width=((size[0]*3)/15), command=lambda: otwieranie_testowe(okno, file_path, wejscie.get())) #wyszukuje bialka w wpisanym lancuchu, i rysuje je w ramce
     wrocButton = CTkButton(okno, text="Wroc", width=15, command=lambda: interfejs(okno))
 
     opis.grid(row=0, column=0,sticky=W+E)
@@ -153,74 +96,139 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
     wrocButton.grid(row=1, column=5,sticky=W+E)
 
 
-def szukaj_interface(okno, wejscie):  # funkcja wypisująca wszystkie łańcuchy w interfejsie
-    global size
-    global czy_podswietlaj
+
+def wczytaj_z_pliku(okno):  #funkcja wybierająca plik
+    for widget in okno.winfo_children():
+        widget.destroy()
+    for x in range(10):
+        okno.columnconfigure(x, weight=0)
+    for x in range(10):
+        okno.rowconfigure(x, weight=0)
+    #elementy okna:
+    napisTytul = CTkLabel(okno, text="wpisz lokalizacje pliku:")
+    sciezkaWejscie = CTkEntry(okno, width=500)
+    przyciskPrzegladaj = CTkButton(okno, text="przegladaj", command=lambda: przegladaj(okno))
+    przyciskSzukaj = CTkButton(okno, text="Szukaj", command=lambda: otwieranie_pliku(okno, sciezkaWejscie.get()))
+    przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: interfejs(okno))
+    napisTytul.grid(row=0, column=0, sticky=W+E)
+    sciezkaWejscie.grid(row=1, column=0, columnspan=5, sticky=W+E)
+    przyciskPrzegladaj.grid(row=2, column=6, sticky=W+E)
+    przyciskSzukaj.grid(row=1, column=6, sticky=W+E)
+    przyciskWroc.grid(row=0, column=6, sticky=W+E)
+    def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
+
+        file_path = filedialog.askopenfilename(filetypes=[("Pliki tekstowe", "*.txt"), ("Pliki FASTA", "*.fasta")])
+        if(file_path==""):
+            wczytaj_z_pliku(okno)
+        else:
+            otwieranie_pliku(okno, file_path)
+
+def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pliku
+    for widget in okno.winfo_children():
+        widget.destroy()
     size = (okno.winfo_width(), okno.winfo_height())
-    Bwidth = (size[0] / 15) * 12  # zmienna przechowująca szerokość naszej ramki
+    ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1] - 50))
+    Bwidth = (size[0] / 15) * 12
+    ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
+    przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: wczytaj_z_pliku(okno))
+    przyciskWroc.grid(row=0, column=6)
+    if file_path.endswith(".txt"):
+        with open(file_path, 'r') as plik:
+            zawartosc = plik.read()
+        if zawartosc.startswith(">"): #jeśli plik tekstowy zaczyna się od > (układ pliku tytuł + zawartość)
+            headers = []
+            sequences = []
+            with open(file_path, 'r') as file:
+                seq = ""
+                for line in file:
+                    line = line.strip()
+                    if line.startswith(">"):
+                        line = line[1:]
+                        headers.append(line)
+                        if seq:
+                            sequences.append(seq)
+                            seq = ""
+                    else:
+                        seq += line
+                sequences.append(seq)
 
-    lanc=Seq(wejscie.get()) #czysty lancuch wpisany
-    lanc1,lanc2,lanc3 = operacje_chemiczne.translacja_bez_bugow(wejscie.get())#obrobione lancuchy(podzielne przez 3, zdebugowane, rodzielone na 3 podlinie)
-    bialka1 = operacje_chemiczne.rozklad_na_bialka(lanc1) #3 łancuchy białek dla 3 przesunięć
-    bialka2 = operacje_chemiczne.rozklad_na_bialka(lanc2)
-    bialka3 =   operacje_chemiczne.rozklad_na_bialka(lanc3)
-    #tworze listy w których przechowywane będą WIDGETY
-    bialka_napisy = []
-    bialka_przyciski = []
-    bialka_szczegol_przyciski = []
-    bialka_szybkie_przyciski=[]
-    #tworze ramke w której będą wyświetlane nasze białeczka
-    BialkaRamka=CTkScrollableFrame(okno,width=(size[0]/15)*12,height=(size[1]-50))
-    BialkaRamka.grid(row=1,column=0,columnspan=4,sticky=E+W+N+S)
+            napisTytul = CTkLabel(okno, text="Wybierz którą sekwencję z pliku chcesz przeanalizować")
+            napisTytul.grid(row=0, column=0)
+            i=0
+            for string in headers:
+                x = CTkButton(ramka, text=headers[i], command=lambda numer=i: otwieranie_testowe(okno, file_path, sequences[numer]))
+                x.grid(row=i, column=0, sticky=W+E)
+                i+=1
+        else:   #jeśli plik nie zaczyna się od > (same geny bez opisu)
+            with open(file_path, 'r') as plik2:
+                i=0
+                for linia in plik2:
+                    i_str = str(i+1)
+                    linia_stripped = linia.strip()
+                    b = CTkButton(ramka, text=("genom " + i_str),command=lambda k=linia_stripped: otwieranie_testowe(okno, file_path, k))
+                    b.grid(row=i, column=0, sticky=W + E)
+                    i += 1
+
+    elif file_path.endswith(".fasta"): #plik fasta
+        i=0
+        with open(file_path, "r") as handle:
+            for record in SeqIO.parse(handle, "fasta"):
+                x = CTkButton(ramka, text=record.id,command=lambda sekwencja=record.seq: otwieranie_testowe(okno, file_path, sekwencja))
+                x.grid(row=i, column=0, sticky=W + E)
+                i+=1
+
+def otwieranie_testowe (okno, file_path, sequence):
+    def rysuj_przyciski(i, bialka):
+        for x in bialka:
+            if (len(x) > 10):
+                x = CTkLabel(ramka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:0"))
+                x.grid(row=i, column=0)
+            else:
+                z = CTkLabel(ramka, text=(x + " P:0"))
+                z.grid(row=i, column=0)
+            z = CTkButton(ramka, text="G.szybko",
+                          command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, lanc, czy_podswietlaj, file_path))
+            z.grid(row=i, column=1, sticky=W+E)
+            z = CTkButton(ramka, text="Generuj",
+                          command=lambda y=x: rysowania.rysuj_interface(okno, y, lanc, czy_podswietlaj, file_path))
+            z.grid(row=i, column=2, sticky=W+E)
+            z = CTkButton(ramka, text="G.dziwnie",
+                          command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, lanc, czy_podswietlaj, file_path))
+            z.grid(row=i, column=3, sticky=W+E)
+            i += 1
+        return i
+    global czy_podswietlaj
+    for widget in okno.winfo_children():
+        widget.destroy()
+    #tworzenie ramki:
+    size = (okno.winfo_width(), okno.winfo_height())
+    ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1] - 50))
+    Bwidth = (size[0] / 15) * 12
+    ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
     for x in range(5):
-        BialkaRamka.columnconfigure(x, weight=1)
-    #poniższe 3 fory tworzą przyciski i napisy do białek
-    for x in bialka1:
-        if(len(x)>10): #jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5]+"..."+x[len(x)-5:]+" P:0"),width=(Bwidth/5)*2))    #napisy do białek
-        else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x +" P:0"),width=(Bwidth/5)*2))  # napisy do białek
-        bialka_przyciski.append(przycisk_dane(BialkaRamka,okno, x, lanc,czy_podswietlaj)) #przyciski do normalnej generacji
-        bialka_szczegol_przyciski.append(przycisk_szczegol_dane(BialkaRamka,okno, x, lanc,czy_podswietlaj)) #przyciski do "szczegółowej" generacji
-        bialka_szybkie_przyciski.append(przycisk_szybkie_dane(BialkaRamka,okno, x, lanc,czy_podswietlaj))#przyciski do szybkiej generacji
-    for x in bialka2:
-        if(len(x) > 10):  # jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:1"),width=(Bwidth/5)*2))  # napisy do białek
-        else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:1"),width=(Bwidth/5)*2))  # napisy do białek
-        bialka_przyciski.append(przycisk_dane(BialkaRamka, okno, x, lanc,czy_podswietlaj))  # przyciski do normalnej generacji
-        bialka_szczegol_przyciski.append(
-        przycisk_szczegol_dane(BialkaRamka, okno, x, lanc,czy_podswietlaj))  # przyciski do "szczegolj" generacji
-        bialka_szybkie_przyciski.append(przycisk_szybkie_dane(BialkaRamka,okno, x, lanc,czy_podswietlaj))# przyciski do szybkiej generacji
-    for x in bialka3:
-        if(len(x) > 10):  # jeśli dłuższe niż 10, to go skracamy
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:2"),width=(Bwidth/5)*2))  # napisy do białek
-        else:
-            bialka_napisy.append(CTkLabel(BialkaRamka, text=(x + " P:2"),width=(Bwidth/5)*2))  # napisy do białek
-        bialka_przyciski.append(przycisk_dane(BialkaRamka, okno, x, lanc,czy_podswietlaj))  # przyciski do normalnej generacji
-        bialka_szczegol_przyciski.append(
-        przycisk_szczegol_dane(BialkaRamka, okno, x, lanc,czy_podswietlaj))  # przyciski do "szczegolj" generacji
-        bialka_szybkie_przyciski.append(przycisk_szybkie_dane(BialkaRamka,okno, x, lanc,czy_podswietlaj))# przyciski do szybkiej generacji
+        ramka.columnconfigure(x, weight=1)
+    lanc = Seq(sequence)  # czysty lancuch
+    lanc1, lanc2, lanc3 = operacje_chemiczne.translacjaBezBugow(sequence)  # obrobione lancuchy
+    bialka1 = operacje_chemiczne.rozklad_na_bialka(lanc1)  # 3 łancuchy białek dla 3 przesunięć
+    bialka2 = operacje_chemiczne.rozklad_na_bialka(lanc2)
+    bialka3 = operacje_chemiczne.rozklad_na_bialka(lanc3)
     i = 0
-    #poniższe fory rysują nasze przyciski i napisy w ramce
-    for x in bialka_napisy:
-        x.grid(row=i, column=0, columnspan=2,sticky=E+W)
-        i += 1
-    i = 0
-    for x in bialka_szczegol_przyciski:
-        x.gridbutton(i, 2) #funkcja klasy, działa jak zwykły grid
-        i += 1
-    i = 0
-    for x in bialka_przyciski:
-        x.gridbutton(i, 3) #funkcja klasy, działa jak zwykły grid
-        i += 1
-    i = 0
-    for x in bialka_szybkie_przyciski:
-        x.gridbutton(i, 4) #funkcja klasy, działa jak zwykły grid
-        i += 1
+    i = rysuj_przyciski(i, bialka1)
+    i = rysuj_przyciski(i, bialka2)
+    i = rysuj_przyciski(i, bialka3)
+    opis = CTkLabel(okno, text="Wybierz co chcesz przeanalizować:")
+    if(file_path=="x"):
+        przycisk_wroc = CTkButton(okno, text="wstecz", command=lambda: wczytaj_recznie(okno, sequence))
+        przycisk_wroc.grid(row=0, column=4, sticky=W+E)
+    else:
+        przycisk_wroc = CTkButton(okno, text="wstecz", command=lambda: otwieranie_pliku(okno, file_path))
+        przycisk_wroc.grid(row=0, column=4, sticky=W+E)
+    opis.grid(row=0, column=0, sticky=W+E)
 
 
-def interface_opcje(okno):  # funkcja wczytująca interface opcji
+
+
+def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     for widget in okno.winfo_children():
         widget.destroy()
     #ustawiamy wagi
@@ -256,11 +264,11 @@ def podswietlenie(okno):
     global czy_podswietlaj
     if (czy_podswietlaj == True):
         czy_podswietlaj = False
-        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (czy_podswietlaj == False):
         czy_podswietlaj = True
-        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
 
 
@@ -279,12 +287,12 @@ def zmien_tryb(okno):
     if (mode == "dark"):
         set_appearance_mode("light")
         mode = "light"
-        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (mode == "light"):
         set_appearance_mode("dark")
         mode = "dark"
-        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
 
 
@@ -294,17 +302,17 @@ def zmien_kolor(okno):
         set_default_color_theme("blue")
         base_color = "blue"
         print("XD")
-        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (base_color == "blue"):
         set_default_color_theme("green")
         base_color = "green"
-        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (base_color == "green"):
         set_default_color_theme("dark-blue")
         base_color = "dark-blue"
-        interface_opcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
+        interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
 
 
 def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
