@@ -22,11 +22,11 @@ def dane_wykres(lanc):
     dane = []
     #suwak = slider()    w przyszłosci funkcja do ustawiania drugiej zmiennej tego gowna na dole
     analizuj = ProteinAnalysis(lanc)        #nie ma za uj pojecia co to sa te skale ale brzmi madrze
-    dane.append(analizuj.protein_scale(ProtParamData.kd, 7, 1))         #indeks hydrofobowy
-    dane.append(analizuj.protein_scale(ProtParamData.em, 7, 1))         #surface accessibility
-    dane.append(analizuj.protein_scale(ProtParamData.Flex, 7, 1))       #Normalized flexibility parameters
-    dane.append(analizuj.protein_scale(ProtParamData.ja, 7, 1))         #Janin Interior to surface transfer energy scale
-    dane.append(analizuj.protein_scale(operacje_chemiczne.gra, 7, 1))   #instability index by Grantham R.
+    dane.append(analizuj.protein_scale(ProtParamData.kd, 3))         #indeks hydrofobowy
+    dane.append(analizuj.protein_scale(ProtParamData.em, 3))         #surface accessibility
+    dane.append(analizuj.protein_scale(ProtParamData.Flex, 3))       #Normalized flexibility parameters
+    dane.append(analizuj.protein_scale(ProtParamData.ja, 3))         #Janin Interior to surface transfer energy scale
+    dane.append(analizuj.protein_scale(operacje_chemiczne.gra, 3))   #instability index by Grantham R.
     dane.append(len(dane[0]))   #pomaga stworzyc oś X w wykresie
     return dane
 
