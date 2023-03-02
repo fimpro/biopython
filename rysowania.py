@@ -7,10 +7,14 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import rdCoordGen
 from rdkit.Chem import Descriptors
-def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, file_path):
+def rysuj_dziwnie_interface(ramex, lanc_Kodonow,czy_podswietlaj):
+    okno= CTkFrame(ramex)
+    okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
     size = (okno.winfo_width(), okno.winfo_height())
+    if (size[0] < 650 or size[1] < 500):  # przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
+        size = (650, 500)
     #ustawiam okno
     for x in range(10):
         okno.columnconfigure(x,weight=0)
@@ -53,20 +57,27 @@ def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, fi
         i += 1
 
     #wrzucamy pozostałe widgety
-    wrocButton = CTkButton(okno, text="wroc", width=(size[0] / 31) * 6,command=lambda: main.otwieranie_testowe(okno, file_path, lancpowrotny))
+    wrocButton = CTkButton(okno, text="wroc", width=(size[0] / 31) * 6,command=lambda: zniszcz(okno))
     wrocButton.grid(row=0, column=1, sticky=W + E)
     WykresyButton = CTkButton(okno, text="wykresy", width=int((size[0] / 31) * 6),
-                              command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow,file_path, lancpowrotny))
+                              command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow))
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
-
-def rysuj_szybko_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, file_path):
+def zniszcz(okno):
+    okno.destroy()
+def rysuj_szybko_interface(ramex, lanc_Kodonow,czy_podswietlaj):
+    okno = CTkFrame(ramex)
+    okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
+    for widget in okno.winfo_children():  # czycimy okno
+        widget.destroy()
+    size = (okno.winfo_width(), okno.winfo_height())
+    if (size[0] < 650 or size[1] < 500):  # przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
+        size = (650, 500)
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
     # to jest lista bialek pelnych typu bialka = ('MIIIIIIII','MIIF')
     # bialka to lista jkbc
-    global size
-    size = (okno.winfo_width(), okno.winfo_height())
+
     # resetujemy formatowanie okna i tworzymy nowe
     for x in range(10):
         okno.columnconfigure(x, weight=0)
@@ -148,14 +159,19 @@ def rysuj_szybko_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, fil
             obraz.grid(row=i, column=0)
             i += 1
     #reszta widgetów
-    wrocButton = CTkButton(okno, text="Wroc", width=int((size[0]/31)*6), command=lambda: main.otwieranie_testowe(okno, file_path, lancpowrotny))
-    WykresyButton = CTkButton(okno, text="wykresy",width=int((size[0]/31)*6), command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow,file_path, lancpowrotny))
+    wrocButton = CTkButton(okno, text="Wroc", width=int((size[0]/31)*6), command=lambda: zniszcz(okno))
+    WykresyButton = CTkButton(okno, text="wykresy",width=int((size[0]/31)*6), command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow))
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
     wrocButton.grid(row=0, column=1, sticky=W + E)
-def rysuj_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, file_path): #funkcja rysująca cały łancuch polipeptydowy w jednym obrazku
-    global size
+def rysuj_interface(ramex, lanc_Kodonow,czy_podswietlaj): #funkcja rysująca cały łancuch polipeptydowy w jednym obrazku
+    okno = CTkFrame(ramex)
+    okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
+    for widget in okno.winfo_children():  # czycimy okno
+        widget.destroy()
     size = (okno.winfo_width(), okno.winfo_height())
+    if (size[0] < 650 or size[1] < 500):  # przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
+        size = (650, 500)
     for widget in okno.winfo_children():  # czyscimy okno
         widget.destroy()
     for x in range(10):
@@ -168,8 +184,8 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, file_path)
         okno.rowconfigure(x,weight=1)
     Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(lanc_Kodonow) #uzyskujemy wzór smiles
     mol = Chem.MolFromSmiles(Smiles) #tworzymy obiekt mol
-    masa=Descriptors.MolWt(mol)
-    rdCoordGen.AddCoords(mol) #uwzględniamy coordynaty 2D
+    if(len(lanc_Kodonow)<40):
+        rdCoordGen.AddCoords(mol) #uwzględniamy coordynaty 2D
     #rysujemy obrazek (z opcją podświetlania lub bez)
     if (czy_podswietlaj):
         hit_bonds = []
@@ -181,11 +197,9 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, file_path)
         obraz = Draw.MolToImage(mol, size=(int(size[0]*10/13),int(size[1])))
     #wrzucamy widgety na okno, tworzymy przyciski
     wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int(size[0]*10/13),int(size[1])))
-    WrocButton = CTkButton(okno, text="wroc", command=lambda: main.otwieranie_testowe(okno, file_path, lancpowrotny),width=size[0]*3/13)
-    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy.wykresy(okno, Smiles,lanc_Kodonow,file_path, lancpowrotny))
-    masaWypisz=CTkLabel(okno,text="masa cząsteczki: "+str(round(masa,4)))
+    WrocButton = CTkButton(okno, text="wroc", command=lambda: zniszcz(okno),width=size[0]*3/13)
+    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy.wykresy(okno, Smiles,lanc_Kodonow))
     obraz = CTkLabel(okno, image=wzor_strukturalny, text="")
     obraz.grid(row=0, column=0, rowspan=6)
     WrocButton.grid(row=4, column=1,sticky=E+W)
     WykresyButton.grid(row=0, column=1,sticky=E+W)
-    masaWypisz.grid(row=2,column=1)

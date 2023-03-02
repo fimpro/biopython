@@ -250,13 +250,13 @@ def otwieranie_testowe (okno, file_path, sequence):
                 Label = CTkLabel(ramka, text=(x + " P:"+przesuniecie))
                 Label.grid(row=i, column=0)
             Button = CTkButton(ramka, text="G.szybko",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, lanc, czy_podswietlaj, file_path))
+                          command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, czy_podswietlaj))
             Button.grid(row=i, column=1, sticky=W+E)
             Button = CTkButton(ramka, text="Generuj",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_interface(okno, y, lanc, czy_podswietlaj, file_path))
+                          command=lambda y=x: rysowania.rysuj_interface(okno, y, czy_podswietlaj))
             Button.grid(row=i, column=2, sticky=W+E)
             Button = CTkButton(ramka, text="G.dziwnie",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, lanc, czy_podswietlaj, file_path))
+                          command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, czy_podswietlaj))
             Button.grid(row=i, column=3, sticky=W+E)
             i += 1
         return i
