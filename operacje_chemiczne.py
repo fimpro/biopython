@@ -1,6 +1,7 @@
 from rdkit import Chem
 import math
 from Bio.Seq import Seq
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
 def wzor_lancucha_aminokwasow(x):
     Smiles={
         "S":"N[C@H](C(O)=O)CO",
