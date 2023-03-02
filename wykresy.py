@@ -13,16 +13,6 @@ from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors as _rdMolDescriptors
 MolWt = lambda *x,**y:_rdMolDescriptors._CalcMolWt(*x,**y)
 
-def pH_bialka(lanc):
-    analizuj = ProteinAnalysis(lanc)
-    pH = (analizuj.isoelectric_point())
-    if pH < 5.0:
-        return "kwasowe"
-    elif 5.0 <= pH <= 6.5:
-        return "obojętne"
-    elif pH > 6.5:
-        return "zasadowe"
-
 def dane_wykres(lanc, suwak):
     dane = []
     window = int(suwak.get())
@@ -125,6 +115,24 @@ def rysowanie_wykresu(okno, lanc_Kodonow):
     Wypisz_wykres_cech.yaxis.set_minor_locator(MultipleLocator(1))
 
     Wypisz_wykres_cech.set_title('Cechy fizyczno-chemiczne aminokwasów')
+    analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
+    dane_kwasy = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
+    lista = []
+    for i in dane_kwasy:   dane_kwasy[i] = dane_kwasy[i] * 100
+    for i in dane_kwasy:
+        lista.append(dane_kwasy.get(i))
+    dane = {'Aminokwas': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
+                          'Y', ],
+            'Częstotliwość występowania': lista}
+
+    Obraz_aminokwasów = plt.Figure(figsize=(10, 4), dpi=50)
+    Wypisz_wykres_aminokwasów = Obraz_aminokwasów.add_subplot(1, 1, 1)
+    Wykres_aminokwasów = FigureCanvasTkAgg(Obraz_aminokwasów, okno)
+    Wykres_aminokwasów.get_tk_widget().grid(row=1, column=0,sticky=N+W+E+S)
+    Dane_aminokwasów = pd.DataFrame(dane)
+    Dane_aminokwasów = Dane_aminokwasów[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
+    Dane_aminokwasów.plot(kind='bar', legend=False, ax=Wypisz_wykres_aminokwasów)
+    Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
 
 def wykresy(ramex, wzor, lanc_Kodonow):  # robocza funkcja do wykresów
     global c1,c2,c3,c4,c5, suwak
@@ -148,28 +156,7 @@ def wykresy(ramex, wzor, lanc_Kodonow):  # robocza funkcja do wykresów
     okno.rowconfigure(2, weight=1)
     okno.columnconfigure(0, weight=1)
     okno.columnconfigure(1, weight=1)
-    analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
-    # pojedyncze wartości
-
-    dane_kwasy = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
-    lista = []
-    for i in dane_kwasy:   dane_kwasy[i] = dane_kwasy[i] * 100
-    for i in dane_kwasy:
-        lista.append(dane_kwasy.get(i))
-    dane = {'Aminokwas': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
-                          'Y', ],
-            'Częstotliwość występowania': lista}
-
-    Obraz_aminokwasów = plt.Figure(figsize=(10, 4), dpi=50)
-    Wypisz_wykres_aminokwasów = Obraz_aminokwasów.add_subplot(1, 1, 1)
-    Wykres_aminokwasów = FigureCanvasTkAgg(Obraz_aminokwasów, okno)
-    Wykres_aminokwasów.get_tk_widget().grid(row=1, column=0,sticky=N+W+E+S)
-    Dane_aminokwasów = pd.DataFrame(dane)
-    Dane_aminokwasów = Dane_aminokwasów[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
-    Dane_aminokwasów.plot(kind='bar', legend=False, ax=Wypisz_wykres_aminokwasów)
-    Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
-
-
+    
     ramka1 = customtkinter.CTkFrame(master=okno)
     ramka_wykres = customtkinter.CTkFrame(master=okno)
     napis = CTkLabel(okno, text="Właściwości Białka")
@@ -230,7 +217,7 @@ def dane_interfejs(ramex, wzor, lanc_Kodonow):
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
     dw.append(analizuj.isoelectric_point())
-    dw.append(pH_bialka(lanc_Kodonow))
+    dw.append(operacje_chemiczne.pH_bialka(lanc_Kodonow))
     dw.append(analizuj.instability_index())
     if (analizuj.instability_index() <= 40):
         dw.append("białko stabilne")
