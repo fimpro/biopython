@@ -49,8 +49,59 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
         dw.append("Białko stabilne")
     elif (analizuj.instability_index() > 40):
         dw.append("Białko niestabilne")
-    print(dane_wykres(lancpowrotny))
+    dane_kwasy1 = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
+    lista = []
+    for i in dane_kwasy1:   dane_kwasy1[i] = dane_kwasy1[i] * 100
+    for i in dane_kwasy1:
+        lista.append(dane_kwasy1.get(i))
+    dane = {'Aminokwas':['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y',],
+            'Częstotliwość występowania':lista}
 
+    Obraz_aminokwasów = plt.Figure(figsize=(12, 4), dpi=50)
+    Wypisz_wykres_aminokwasów = Obraz_aminokwasów.add_subplot(1,1,1)
+    Wykres_aminokwasów = FigureCanvasTkAgg(Obraz_aminokwasów, okno)
+    Wykres_aminokwasów.get_tk_widget().grid(row=1, column=0)
+    Dane_aminokwasów = pd.DataFrame(dane)
+    Dane_aminokwasów = Dane_aminokwasów[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
+    Dane_aminokwasów.plot(kind='bar', legend=True, ax=Wypisz_wykres_aminokwasów)
+    Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
+
+    dane_do_wykresu = dane_wykres(lanc_kodonow)
+    wartości_hydrofobia=(dane_do_wykresu[0])
+    wartości_dostępność=(dane_do_wykresu[1])
+    wartości_parametry=(dane_do_wykresu[2])
+    wartości_skala=(dane_do_wykresu[3])
+    wartości_niestabilność=(dane_do_wykresu[4])
+    dlugosc=len(danedo1)
+    aminokwas=[]
+    for x in range(dlugosc):
+        aminokwas.append(x)
+    dane_hydrofobia = {'Aminokwasy': aminokwas, 'Indeks hydrofobowy': wartości_hydrofobia}
+    dane_dostępność = {'Aminokwasy': aminokwas, 'Dostępność powierzchniowa': wartości_dostępność}
+    dane_parametry = {'Aminokwasy': aminokwas, 'Zogólnione parametry elastyczności': wartości_parametry}
+    dane_skala = {'Aminokwasy': aminokwas, 'Skala Janin transferu energii': wartości_skala}
+    dane_niestabilność = {'Aminokwasy': aminokwas, 'indeks niestabilności Granthama R.': wartości_niestabilność}
+    Obraz_cech = plt.Figure(figsize=(12, 4), dpi=50)
+    Wypisz_wykres_cech = Obraz_cech.add_subplot(2, 2, 1)
+    Wykres_szczegółowy = FigureCanvasTkAgg(Obraz_cech, okno)
+    Wykres_szczegółowy.get_tk_widget().grid(row=2, column=0)
+    Dane_indeks_hydrofobowy = pd.DataFrame(dane_hydrofobia)
+    Dane_indeks_hydrofobowy = Dane_indeks_hydrofobowy[['Aminokwasy', 'Indeks hydrofobowy']].groupby('Aminokwasy').sum()
+    Dane_indeks_hydrofobowy.plot(kind='line', legend=True, ax=Wypisz_wykres_cech)
+    Dane_dostępność_powierzchniowa = pd.DataFrame( dane_dostępność)
+    Dane_dostępność_powierzchniowa = Dane_dostępność_powierzchniowa[['Aminokwasy', 'Dostępność powierzchniowa']].groupby('Aminokwasy').sum()
+    Dane_dostępność_powierzchniowa.plot(kind='line', legend=True, ax=Wypisz_wykres_cech)
+    Dane_zogólnione_parametry_elastyczności = pd.DataFrame(dane_parametry)
+    Dane_zogólnione_parametry_elastyczności = Dane_zogólnione_parametry_elastyczności[['Aminokwasy', 'Zogólnione parametry elastyczności']].groupby('Aminokwasy').sum()
+    Dane_zogólnione_parametry_elastyczności.plot(kind='line', legend=True, ax=Wypisz_wykres_cech)
+    Dane_skala_transferu_energii_Janin = pd.DataFrame(dane_skala)
+    Dane_skala_transferu_energii_Janin = Dane_skala_transferu_energii_Janin[['Aminokwasy', 'Skala Janin transferu energii']].groupby('Aminokwasy').sum()
+    Dane_skala_transferu_energii_Janin.plot(kind='line', legend=True, ax=Wypisz_wykres_cech)
+    Dane_indeks_niestabilności= pd.DataFrame(dane_niestabilność)
+    Dane_indeks_niestabilności = Dane_indeks_niestabilności[['Aminokwasy', 'indeks niestabilności Granthama R.']].groupby('Aminokwasy').sum()
+    Dane_indeks_niestabilności.plot(kind='line', legend=True, ax=Wypisz_wykres_cech)
+    Wypisz_wykres_cech.set_title('Cechy fizyczno-chemiczne aminokwasów')
+    
     napis = CTkLabel(okno, text="", width=100)    #dopisać wzór tam gdzie puste!!!
     returnButton = CTkButton(okno, text="Wróć", command=lambda: rysuj_interface(okno, lanc_Kodonow, lancpowrotny))
     AtomyButton = CTkButton(okno, text="Ilość Atomów", command=lambda: WypiszAtomy(okno,wzor, lanc_Kodonow, lancpowrotny))
