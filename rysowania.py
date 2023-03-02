@@ -7,8 +7,9 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import rdCoordGen
 from rdkit.Chem import Descriptors
-def rysuj_dziwnie_interface(ramex, lanc_Kodonow,czy_podswietlaj,size):
+def rysuj_dziwnie_interface(ramex, lanc_Kodonow,czy_podswietlaj):
     okno= CTkFrame(ramex)
+    size = (ramex.winfo_width(), ramex.winfo_height())
     okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
@@ -55,16 +56,17 @@ def rysuj_dziwnie_interface(ramex, lanc_Kodonow,czy_podswietlaj,size):
         i += 1
 
     #wrzucamy pozostałe widgety
-    wrocButton = CTkButton(okno, text="wroc", width=(size[0] / 31) * 6,command=lambda: zniszcz(okno))
+    wrocButton = CTkButton(okno, text="Wróć", width=(size[0] / 31) * 6,command=lambda: zniszcz(okno))
     wrocButton.grid(row=0, column=1, sticky=W + E)
-    WykresyButton = CTkButton(okno, text="wykresy", width=int((size[0] / 31) * 6),
+    WykresyButton = CTkButton(okno, text="Wykresy", width=int((size[0] / 31) * 6),
                               command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow))
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
 def zniszcz(okno):
     okno.destroy()
-def rysuj_szybko_interface(ramex, lanc_Kodonow,czy_podswietlaj,size):
+def rysuj_szybko_interface(ramex, lanc_Kodonow,czy_podswietlaj):
     okno = CTkFrame(ramex)
+    size = (ramex.winfo_width(), ramex.winfo_height())
     okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
@@ -151,13 +153,14 @@ def rysuj_szybko_interface(ramex, lanc_Kodonow,czy_podswietlaj,size):
             obraz.grid(row=i, column=0)
             i += 1
     #reszta widgetów
-    wrocButton = CTkButton(okno, text="Wroc", width=int((size[0]/31)*6), command=lambda: zniszcz(okno))
-    WykresyButton = CTkButton(okno, text="wykresy",width=int((size[0]/31)*6), command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow))
+    wrocButton = CTkButton(okno, text="Wróć", width=int((size[0]/31)*6), command=lambda: zniszcz(okno))
+    WykresyButton = CTkButton(okno, text="Wykresy",width=int((size[0]/31)*6), command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow))
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
     wrocButton.grid(row=0, column=1, sticky=W + E)
-def rysuj_interface(ramex, lanc_Kodonow,czy_podswietlaj,size): #funkcja rysująca cały łancuch polipeptydowy w jednym obrazku
+def rysuj_interface(ramex, lanc_Kodonow,czy_podswietlaj): #funkcja rysująca cały łancuch polipeptydowy w jednym obrazku
     okno = CTkFrame(ramex)
+    size = (ramex.winfo_width(), ramex.winfo_height())
     okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()

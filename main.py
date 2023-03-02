@@ -19,7 +19,7 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
     global size #potrzebuje wielkosci, żeby widgety miały odpowiednie wymiary
     size=(okno.winfo_width(),okno.winfo_height())
     if(size[0]<650 or size[1]<500): #przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
-        size=(650,500)
+        size=(750,500)
     #2 fory czyszczą ustawienie wagi kolumn i wierszy
     for x in range(10): #
         okno.columnconfigure(x, weight=0)
@@ -244,7 +244,7 @@ def otwieranie_testowe (okno, file_path, sequence):
         okno.rowconfigure(x,weight=0)
     for x in range(10):
         okno.columnconfigure(x,weight=0)
-    for x in range(4):
+    for x in range(5):
         okno.columnconfigure(x, weight=1)
     okno.rowconfigure(1,weight=1)
     okno.rowconfigure(0, weight=0)
@@ -257,13 +257,13 @@ def otwieranie_testowe (okno, file_path, sequence):
                 Label = CTkLabel(ramka, text=(x + " P:"+przesuniecie))
                 Label.grid(row=i, column=0)
             Button = CTkButton(ramka, text="G.szybko",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, czy_podswietlaj,size))
+                          command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, czy_podswietlaj))
             Button.grid(row=i, column=1, sticky=W+E)
             Button = CTkButton(ramka, text="Generuj",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_interface(okno, y, czy_podswietlaj,size))
+                          command=lambda y=x: rysowania.rysuj_interface(okno, y, czy_podswietlaj))
             Button.grid(row=i, column=2, sticky=W+E)
             Button = CTkButton(ramka, text="G.dziwnie",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, czy_podswietlaj,size))
+                          command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, czy_podswietlaj))
             Button.grid(row=i, column=3, sticky=W+E)
             i += 1
         return i
@@ -289,10 +289,10 @@ def otwieranie_testowe (okno, file_path, sequence):
     opis = CTkLabel(okno, text="Wybierz co chcesz przeanalizować:")
     if(file_path=="x"):
         przycisk_wroc = CTkButton(okno, text="Wstecz", command=lambda: wczytaj_recznie(okno, sequence))
-        przycisk_wroc.grid(row=0, column=4, sticky=W+E)
+        przycisk_wroc.grid(row=1, column=4, sticky=W+E+S,padx=3,pady=25)
     else:
         przycisk_wroc = CTkButton(okno, text="wstecz", command=lambda: otwieranie_pliku(okno, file_path))
-        przycisk_wroc.grid(row=0, column=4, sticky=W+E)
+        przycisk_wroc.grid(row=1, column=4, sticky=W+E+S,padx=3,pady=25)
     opis.grid(row=0, column=0, sticky=W+E)
 
 
@@ -424,7 +424,7 @@ if __name__ == '__main__':
     oknoR.rowconfigure(0, weight=1)
     okno.grid(row=0,column=0,sticky=W+E+N+S)
 
-    oknoR.minsize(height=500, width=650)
+    oknoR.minsize(height=500, width=750)
     oknoR.title("Katolgenom")
     plik = open("opcje.txt")
     opcje = plik.readlines()
