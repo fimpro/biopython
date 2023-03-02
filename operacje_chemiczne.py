@@ -195,3 +195,14 @@ def listaAtomow(wzor):
     mol=Chem.MolFromSmiles(wzor)
     for atom in mol.GetAtoms():
         print(atom.GetAtomicNum())
+
+
+def pH_bialka(lanc):
+    analizuj = ProteinAnalysis(lanc)
+    pH = (analizuj.isoelectric_point())
+    if pH < 5.0:
+        return "kwasowe"
+    elif 5.0 <= pH <= 6.5:
+        return "obojetne"
+    elif pH > 6.5:
+        return "zasadowe"
