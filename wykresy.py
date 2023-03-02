@@ -11,6 +11,10 @@ import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
+from rdkit import Chem
+from rdkit.Chem import rdMolDescriptors as _rdMolDescriptors
+MolWt = lambda *x,**y:_rdMolDescriptors._CalcMolWt(*x,**y)
+
 
 def pH_bialka(lanc):
     analizuj = ProteinAnalysis(lanc)
@@ -21,7 +25,6 @@ def pH_bialka(lanc):
         return "obojętne"
     elif pH > 6.5:
         return "zasadowe"
-
 
 def dane_wykres(lanc):
     dane = []
@@ -204,6 +207,7 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
     for x in range(10):
         okno.columnconfigure(x,weight=0)
     analizuj = ProteinAnalysis(lanc_Kodonow)
+    mol = Chem.MolFromSmiles(wzor)
     dw = []
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
@@ -214,6 +218,7 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
         dw.append("białko stabilne")
     elif (analizuj.instability_index() > 40):
         dw.append("białko niestabilne")
+    dw.append(MolWt(Chem.MolFromSmiles(wzor)))
     struktura=dw[0]
     linijka_1 = CTkLabel(okno, text="Na strukturę drugorzędową tego białka składa się:")
     linijka_2 = CTkLabel(okno, text= str(struktura[0]*100)+"% harmonijek beta (pofałdowanej płaszczyzny)")
@@ -221,9 +226,9 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
     linijka_4 = CTkLabel(okno, text= str(struktura[2]*100)+"% beta zakrętów (pętli omega)")
     linijka_5 = CTkLabel(okno, text="Punkt izoelektryczny tego białka wynosi "+str(dw[1]))
     linijka_6 = CTkLabel(okno, text="W punkcie izoelektrycznym to białko jest "+dw[2])
-    linijka_7 = CTkLabel(okno, text="Indeks niestabilności Guruprasada wynosi"+str(dw[3]))
-    linijka_8 = CTkLabel(okno, text="Oznacza to, że jest to "+dw[4])
-    linijka_9 = CTkLabel(okno, text="Masa tego białka wynosi")
+    linijka_7 = CTkLabel(okno, text="Indeks niestabilności Guruprasada wynosi "+str(dw[3]))
+    linijka_8 = CTkLabel(okno, text="Jest to "+dw[4])
+    linijka_9 = CTkLabel(okno, text="Masa tego białka wynosi "+str(dw[5]))
     linijka_1.grid(row=0,column=0, sticky=W)
     linijka_2.grid(row=1, column=0, sticky=W)
     linijka_3.grid(row=2, column=0, sticky=W)
