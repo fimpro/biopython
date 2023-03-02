@@ -8,6 +8,7 @@ import operacje_chemiczne
 import rysowania
 from tkinter import filedialog
 from PIL import Image
+import math
 mode = "dark"  # zmienna przechowująca tryb aplikacji
 base_color = "dark-blue"
 czy_podswietlaj = True
@@ -210,8 +211,6 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
                         seq += line
                 sequences.append(seq)
 
-            napisTytul = CTkLabel(okno, text="Wybierz którą sekwencję z pliku chcesz przeanalizować")
-            napisTytul.grid(row=0, column=0)
             i=0
             for string in headers:
                 x = CTkButton(ramka, text=headers[i], width=(size[0] / 15) * 12-50, command=lambda numer=i: otwieranie_testowe(okno, file_path, sequences[numer]))
@@ -236,6 +235,23 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
                 i+=1
     else:
         wczytaj_z_pliku(okno)
+def rysuj_przyciski(ramka,i, bialko,przesuniecie):
+
+    if (len(bialko) > 10):
+        Label = CTkLabel(ramka, text=(bialko[:5] + "..." + bialko[len(bialko) - 5:] + " P:"+przesuniecie+" Len: "+str(len(bialko))))
+        Label.grid(row=i,padx=2, column=0)
+    else:
+        Label = CTkLabel(ramka, text=(bialko + " P:"+przesuniecie))
+        Label.grid(row=i,padx=2, column=0)
+    Button = CTkButton(ramka, text="G.szybko",width=(size[0] / 15) * 2,
+                          command=lambda y=bialko: rysowania.rysuj_szybko_interface(okno, y, czy_podswietlaj))
+    Button.grid(row=i, column=1,padx=2, sticky=W+E)
+    Button = CTkButton(ramka, text="Generuj",width=(size[0] / 15) * 2,
+                          command=lambda y=bialko: rysowania.rysuj_interface(okno, y, czy_podswietlaj))
+    Button.grid(row=i, column=2,padx=2, sticky=W+E)
+    Button = CTkButton(ramka, text="G.dziwnie",width=(size[0] / 15) * 2,
+                          command=lambda y=bialko: rysowania.rysuj_dziwnie_interface(okno, y, czy_podswietlaj))
+    Button.grid(row=i, column=3,padx=2, sticky=W+E)
 
 def otwieranie_testowe (okno, file_path, sequence):
     global size
@@ -248,52 +264,63 @@ def otwieranie_testowe (okno, file_path, sequence):
         okno.columnconfigure(x, weight=1)
     okno.rowconfigure(1,weight=1)
     okno.rowconfigure(0, weight=0)
-    def rysuj_przyciski(i, bialka,przesuniecie):
-        for x in bialka:
-            if (len(x) > 10):
-                Label = CTkLabel(ramka, text=(x[:5] + "..." + x[len(x) - 5:] + " P:"+przesuniecie))
-                Label.grid(row=i, column=0)
-            else:
-                Label = CTkLabel(ramka, text=(x + " P:"+przesuniecie))
-                Label.grid(row=i, column=0)
-            Button = CTkButton(ramka, text="G.szybko",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, czy_podswietlaj))
-            Button.grid(row=i, column=1, sticky=W+E)
-            Button = CTkButton(ramka, text="Generuj",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_interface(okno, y, czy_podswietlaj))
-            Button.grid(row=i, column=2, sticky=W+E)
-            Button = CTkButton(ramka, text="G.dziwnie",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, czy_podswietlaj))
-            Button.grid(row=i, column=3, sticky=W+E)
-            i += 1
-        return i
-    global czy_podswietlaj
     for widget in okno.winfo_children():
         widget.destroy()
     #tworzenie ramki:
-
-    ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1] - 50))
+    global aktualne_bialko
+    aktualne_bialko = 0
+    ramka = CTkFrame(okno, width=(size[0] / 15) * 12, height=(size[1] - 50))
+    przyciskNext=CTkButton(ramka,text="Następna",command=lambda: rysuj_bialka(ramka,bialka,aktualne_bialko+10))
+    przyciskBack=CTkButton(ramka,text="Poprzednia",command=lambda: rysuj_bialka(ramka,bialka,aktualne_bialko-10) )
     Bwidth = (size[0] / 15) * 12
     ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
-    for x in range(5):
-        ramka.columnconfigure(x, weight=1)
-    lanc = Seq(sequence)  # czysty lancuch
+    for x in range(12):
+        ramka.rowconfigure(x,weight=1)
+    for x in range(4):
+        ramka.columnconfigure(x,weight=1)
     lanc1, lanc2, lanc3 = operacje_chemiczne.translacja_bez_bugow(sequence)  # obrobione lancuchy
     bialka1 = operacje_chemiczne.rozklad_na_bialka(lanc1)  # 3 łancuchy białek dla 3 przesunięć
     bialka2 = operacje_chemiczne.rozklad_na_bialka(lanc2)
     bialka3 = operacje_chemiczne.rozklad_na_bialka(lanc3)
-    i = 0
-    i = rysuj_przyciski(i, bialka1,"0")
-    i = rysuj_przyciski(i, bialka2,"1")
-    i = rysuj_przyciski(i, bialka3,"2")
+    bialka=[]
+    for x in bialka1:
+        bialka.append([x,"0"])
+    for x in bialka2:
+        bialka.append([x,"1"])
+    for x in bialka3:
+        bialka.append([x,"2"])
+    rysuj_bialka(ramka,bialka,0)
     opis = CTkLabel(okno, text="Wybierz co chcesz przeanalizować:")
     if(file_path=="x"):
         przycisk_wroc = CTkButton(okno, text="Wstecz", command=lambda: wczytaj_recznie(okno, sequence))
-        przycisk_wroc.grid(row=1, column=4, sticky=W+E+S,padx=3,pady=25)
+        przycisk_wroc.grid(row=0, column=4, sticky=W+E,padx=3,pady=25)
     else:
-        przycisk_wroc = CTkButton(okno, text="wstecz", command=lambda: otwieranie_pliku(okno, file_path))
-        przycisk_wroc.grid(row=1, column=4, sticky=W+E+S,padx=3,pady=25)
+        przycisk_wroc = CTkButton(okno, text="Wstecz", command=lambda: otwieranie_pliku(okno, file_path))
+        przycisk_wroc.grid(row=0, column=4, sticky=W+E,padx=3,pady=25)
     opis.grid(row=0, column=0, sticky=W+E)
+def rysuj_bialka(ramka,bialka,i):
+    global aktualne_bialko
+    for widget in ramka.winfo_children():
+        widget.destroy()
+    przyciskNext = CTkButton(ramka, text="Następne", command=lambda: rysuj_bialka(ramka, bialka, aktualne_bialko + 10))
+    przyciskBack = CTkButton(ramka, text="Poprzednie",command=lambda: rysuj_bialka(ramka, bialka, aktualne_bialko - 10))
+
+    przyciskNext.grid(row=11, column=1, pady=10,sticky=E+W)
+    przyciskBack.grid(row=11, column=3, pady=10,sticky=E+W)
+
+    if(i>=0 and i+10<len(bialka)):
+        aktualne_bialko = i
+        strona = CTkLabel(ramka, text="Strona: "+str(int(aktualne_bialko / 10) + 1)+"/"+str(math.ceil(len(bialka)/10)))
+        strona.grid(row=11, column=2)
+        bialka_w_ramce = bialka[i:i+10]
+        for x in range(10):
+            rysuj_przyciski(ramka,x,bialka_w_ramce[x][0],bialka_w_ramce[x][1])
+    if(len(bialka)<10):
+        aktualne_bialko = 0
+        strona = CTkLabel(ramka, text="Strona: 1/1")
+        strona.grid(row=11, column=2)
+        for x in range(len(bialka)):
+            rysuj_przyciski(ramka, x, bialka[x][0],bialka[x][1])
 
 
 def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
@@ -371,7 +398,6 @@ def zmien_kolor(okno):
     if (base_color == "dark-blue"):
         set_default_color_theme("blue")
         base_color = "blue"
-        print("XD")
         interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
         return 0
     if (base_color == "blue"):

@@ -13,6 +13,16 @@ from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors as _rdMolDescriptors
 MolWt = lambda *x,**y:_rdMolDescriptors._CalcMolWt(*x,**y)
 
+def pH_bialka(lanc):
+    analizuj = ProteinAnalysis(lanc)
+    pH = (analizuj.isoelectric_point())
+    if pH < 5.0:
+        return "kwasowe"
+    elif 5.0 <= pH <= 6.5:
+        return "obojętne"
+    elif pH > 6.5:
+        return "zasadowe"
+
 def dane_wykres(lanc, suwak):
     dane = []
     window = int(suwak.get())
@@ -115,24 +125,6 @@ def rysowanie_wykresu(okno, lanc_Kodonow):
     Wypisz_wykres_cech.yaxis.set_minor_locator(MultipleLocator(1))
 
     Wypisz_wykres_cech.set_title('Cechy fizyczno-chemiczne aminokwasów')
-    analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
-    dane_kwasy = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
-    lista = []
-    for i in dane_kwasy:   dane_kwasy[i] = dane_kwasy[i] * 100
-    for i in dane_kwasy:
-        lista.append(dane_kwasy.get(i))
-    dane = {'Aminokwas': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
-                          'Y', ],
-            'Częstotliwość występowania': lista}
-
-    Obraz_aminokwasów = plt.Figure(figsize=(10, 4), dpi=50)
-    Wypisz_wykres_aminokwasów = Obraz_aminokwasów.add_subplot(1, 1, 1)
-    Wykres_aminokwasów = FigureCanvasTkAgg(Obraz_aminokwasów, okno)
-    Wykres_aminokwasów.get_tk_widget().grid(row=1, column=0,sticky=N+W+E+S)
-    Dane_aminokwasów = pd.DataFrame(dane)
-    Dane_aminokwasów = Dane_aminokwasów[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
-    Dane_aminokwasów.plot(kind='bar', legend=False, ax=Wypisz_wykres_aminokwasów)
-    Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
 
 def wykresy(ramex, wzor, lanc_Kodonow):  # robocza funkcja do wykresów
     global c1,c2,c3,c4,c5, suwak
@@ -154,9 +146,30 @@ def wykresy(ramex, wzor, lanc_Kodonow):  # robocza funkcja do wykresów
         okno.columnconfigure(x,weight=0)
     okno.rowconfigure(1,weight=1)
     okno.rowconfigure(2, weight=1)
-    okno.columnconfigure(0, weight=1)
+    okno.columnconfigure(0, weight=3)
     okno.columnconfigure(1, weight=1)
-    
+    analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
+    # pojedyncze wartości
+
+    dane_kwasy = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
+    lista = []
+    for i in dane_kwasy:   dane_kwasy[i] = dane_kwasy[i] * 100
+    for i in dane_kwasy:
+        lista.append(dane_kwasy.get(i))
+    dane = {'Aminokwas': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
+                          'Y', ],
+            'Częstotliwość występowania': lista}
+
+    Obraz_aminokwasów = plt.Figure(figsize=(10, 4), dpi=50)
+    Wypisz_wykres_aminokwasów = Obraz_aminokwasów.add_subplot(1, 1, 1)
+    Wykres_aminokwasów = FigureCanvasTkAgg(Obraz_aminokwasów, okno)
+    Wykres_aminokwasów.get_tk_widget().grid(row=1, column=0,sticky=N+W+E+S)
+    Dane_aminokwasów = pd.DataFrame(dane)
+    Dane_aminokwasów = Dane_aminokwasów[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
+    Dane_aminokwasów.plot(kind='bar', legend=False, ax=Wypisz_wykres_aminokwasów)
+    Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
+
+
     ramka1 = customtkinter.CTkFrame(master=okno)
     ramka_wykres = customtkinter.CTkFrame(master=okno)
     napis = CTkLabel(okno, text="Właściwości Białka")
@@ -170,8 +183,15 @@ def wykresy(ramex, wzor, lanc_Kodonow):  # robocza funkcja do wykresów
     napis.grid(row=0, column=0, columnspan=2, sticky=E+W)
     ramka1.grid(row=1,column=1,sticky=N+W+E+S)
     ramka_wykres.grid(row=2,column=1,sticky=N+W+E+S)
-    returnButton.grid(row=0, column=0, pady=10)
-    DaneButton.grid(row=2, column=0, pady=10)
+    ramka_wykres.columnconfigure(0,weight=1)
+    for x in range(15):
+        ramka_wykres.rowconfigure(x, weight=1)
+    ramka1.columnconfigure(0,weight=1)
+    for x in range(5):
+        ramka1.rowconfigure(x, weight=1)
+    returnButton.grid(row=1, column=0, sticky=E+W)
+    DaneButton.grid(row=3, column=0, sticky=E+W)
+
     check_var1 = tkinter.IntVar(value=1)
     check_var2 = tkinter.IntVar(value=1)
     check_var3 = tkinter.IntVar(value=1)
@@ -188,15 +208,15 @@ def wykresy(ramex, wzor, lanc_Kodonow):  # robocza funkcja do wykresów
     checkbox_indeks_niestabilności = customtkinter.CTkCheckBox(master=ramka_wykres, text="Indeks niestabilności Granthama R.",text_color='#d0e831', command=lambda: checkbox_event5(okno,lanc_Kodonow),
                                          variable=check_var5, onvalue=1, offvalue=0)
     rysowanie_wykresu(okno,lanc_Kodonow)
-    checkbox_indeks_hydrofobowy.grid(row=0,column=0,rowspan=2,sticky=W,pady=5,padx=5 )
-    checkbox_dostępność_powierzchniowa.grid(row=2,column=0,rowspan=2,sticky=W,pady=5,padx=5 )
-    checkbox_zogólnione_parametry_elastyczności.grid(row=4,column=0, rowspan=2,sticky=W,pady=5,padx=5 )
-    checkbox_skala_transferu_energii_Janin.grid(row=6,column=0, rowspan=2,sticky=W,pady=5,padx=5 )
-    checkbox_indeks_niestabilności.grid(row=8,column=0, rowspan=2,sticky=W,pady=5,padx=5)
-    napiss1.grid(row=10,column=0, rowspan=2,sticky=W,pady=5,padx=5)
-    napiss2.grid(row=11,column=0, rowspan=2,sticky=W,pady=5,padx=5)
-    suwak.grid(row=12,column=0, rowspan=2,sticky=W,pady=5,padx=5)
-    wykresButton.grid(row=14,column=0, rowspan=2,sticky=W,pady=5,padx=5)
+    checkbox_indeks_hydrofobowy.grid(row=0,column=0,rowspan=2,sticky=W+E,pady=5,padx=5 )
+    checkbox_dostępność_powierzchniowa.grid(row=2,column=0,rowspan=2,sticky=W+E,pady=5,padx=5 )
+    checkbox_zogólnione_parametry_elastyczności.grid(row=4,column=0, rowspan=2,sticky=W+E,pady=5,padx=5 )
+    checkbox_skala_transferu_energii_Janin.grid(row=6,column=0, rowspan=2,sticky=W+E,pady=5,padx=5 )
+    checkbox_indeks_niestabilności.grid(row=8,column=0, rowspan=2,sticky=W+E,pady=5,padx=5)
+    napiss1.grid(row=10,column=0, rowspan=2,sticky=W+E,pady=5,padx=5)
+    napiss2.grid(row=11,column=0, rowspan=2,sticky=W+E,pady=5,padx=5)
+    suwak.grid(row=12,column=0, rowspan=2,sticky=W+E,pady=5,padx=5)
+    wykresButton.grid(row=14,column=0, rowspan=2,sticky=W+E,pady=5,padx=5)
 
 def dane_interfejs(ramex, wzor, lanc_Kodonow):
     okno = CTkFrame(ramex)

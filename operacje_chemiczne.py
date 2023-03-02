@@ -1,7 +1,6 @@
 from rdkit import Chem
 import math
 from Bio.Seq import Seq
-from Bio.SeqUtils.ProtParam import ProteinAnalysis
 def wzor_lancucha_aminokwasow(x):
     Smiles={
         "S":"N[C@H](C(O)=O)CO",
@@ -24,7 +23,8 @@ def wzor_lancucha_aminokwasow(x):
         "E":"NC(C(O)=O)CCC(=O)O",
         "G":"NC(C(O)=O)",
         "M":"N[C@H](C(O)=O)CCSC",
-        "Q":"NC(C(O)=O)CCC(=O)N"
+        "Q":"NC(C(O)=O)CCC(=O)N",
+        "X":"NC(C(O)=O)"   #kodon złego odczytu, zdecydowaliśmy się po prostu nie dawać mu reszty.
     } #słownik który każdemu kodonowi ich wzór chemiczny
     PozFirC={
         "S":9,
@@ -46,7 +46,9 @@ def wzor_lancucha_aminokwasow(x):
         "D": 5,
         "E": 5,
         "G": 5,
-        "M":9
+        "M":9,
+        "X":5
+
     } # słownik który przechowuje pozycje grupy OH każdego kodonu we wzorach smiles
     slowo=""
     liczba=0
@@ -65,7 +67,7 @@ def translacja_bez_bugow(lanc):
     czyt=False
     czyu=False
     for x in lanc:
-        if(x=='A' or x=='C'or x=='G'):
+        if(x=='A' or x=='C'or x=='G'or 'N'):
             pass
         elif(x=='U'):
             czyu=True
@@ -183,13 +185,3 @@ gra = {
             'Y': 6.2,
             'V': 5.9
 }
-
-def pH_bialka(lanc):
-    analizuj = ProteinAnalysis(lanc)
-    pH = (analizuj.isoelectric_point())
-    if pH < 5.0:
-        return "kwasowe"
-    elif 5.0 <= pH <= 6.5:
-        return "obojetne"
-    elif pH > 6.5:
-        return "zasadowe"
