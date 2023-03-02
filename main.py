@@ -386,22 +386,8 @@ def zmien_kolor(okno):
 
 
 def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
-       for widget in okno.winfo_children():
+    for widget in okno.winfo_children():
         widget.destroy()
-
-    global size
-    size = (okno.winfo_width(), okno.winfo_height())
-    # ustawiam wagi kolumn
-    for x in range(10):
-        okno.columnconfigure(x, weight=0)
-    for x in range(10):
-        okno.rowconfigure(x, weight=0)
-    for x in range(5):
-        okno.columnconfigure(x, weight=2)
-    okno.columnconfigure(5, weight=3)
-    okno.rowconfigure(0, weight=1)
-    okno.rowconfigure(1, weight=1)
-    okno.rowconfigure(2, weight=5)
     ramka = CTkScrollableFrame(okno, width=500, height=1000)
     ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
     for x in range(5):
