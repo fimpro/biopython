@@ -18,7 +18,7 @@ def pH_bialka(lanc):
     if pH < 5.0:
         return "kwasowe"
     elif 5.0 <= pH <= 6.5:
-        return "obojetne"
+        return "obojętne"
     elif pH > 6.5:
         return "zasadowe"
 
@@ -87,7 +87,6 @@ def rysowanie_wykresu(okno, lanc_Kodonow):
     aminokwas = []
     for x in range(dlugosc):
         aminokwas.append(x+1)
-    print(lanc_Kodonow)
     dane_hydrofobia = {'Aminokwasy': aminokwas, 'Indeks hydrofobowy': wartości_hydrofobia}
     dane_dostępność = {'Aminokwasy': aminokwas, 'Dostępność powierzchniowa': wartości_dostępność}
     dane_parametry = {'Aminokwasy': aminokwas, 'Zogólnione parametry elastyczności': wartości_parametry}
@@ -204,19 +203,38 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
         okno.rowconfigure(x,weight=0)
     for x in range(10):
         okno.columnconfigure(x,weight=0)
-    kwasowosc = pH_bialka(lanc_Kodonow)
     analizuj = ProteinAnalysis(lanc_Kodonow)
     dw = []
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
     dw.append(analizuj.isoelectric_point())
-    dw.append(analizuj.instability_index())
     dw.append(pH_bialka(lanc_Kodonow))
+    dw.append(analizuj.instability_index())
     if (analizuj.instability_index() <= 40):
-        dw.append("Białko stabilne")
+        dw.append("białko stabilne")
     elif (analizuj.instability_index() > 40):
-        dw.append("Białko niestabilne")
-    print(dw)
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: wykresy(okno, wzor, lanc_Kodonow, lancpowrotny),
+        dw.append("białko niestabilne")
+    struktura=dw[0]
+    linijka_1 = CTkLabel(okno, text="Na strukturę drugorzędową tego białka składa się:")
+    linijka_2 = CTkLabel(okno, text= str(struktura[0]*100)+"% harmonijek beta (pofałdowanej płaszczyzny)")
+    linijka_3 = CTkLabel(okno, text= str(struktura[1]*100)+"% helis alfa (helis pi)")
+    linijka_4 = CTkLabel(okno, text= str(struktura[2]*100)+"% beta zakrętów (pętli omega)")
+    linijka_5 = CTkLabel(okno, text="Punkt izoelektryczny tego białka wynosi "+str(dw[1]))
+    linijka_6 = CTkLabel(okno, text="W punkcie izoelektrycznym to białko jest "+dw[2])
+    linijka_7 = CTkLabel(okno, text="Indeks niestabilności Guruprasada wynosi"+str(dw[3]))
+    linijka_8 = CTkLabel(okno, text="Oznacza to, że jest to "+dw[4])
+    linijka_9 = CTkLabel(okno, text="Masa tego białka wynosi")
+    linijka_1.grid(row=0,column=0, sticky=W)
+    linijka_2.grid(row=1, column=0, sticky=W)
+    linijka_3.grid(row=2, column=0, sticky=W)
+    linijka_4.grid(row=3, column=0, sticky=W)
+    linijka_5.grid(row=4, column=0, sticky=W)
+    linijka_6.grid(row=5, column=0, sticky=W)
+    linijka_7.grid(row=6, column=0, sticky=W)
+    linijka_8.grid(row=7, column=0, sticky=W)
+    linijka_9.grid(row=8, column=0, sticky=W)
+
+
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lancpowrotny),
                              width=100)
-    returnButton.grid(row=0, column=0)
+    returnButton.grid(row=0, column=1)
