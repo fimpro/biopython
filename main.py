@@ -121,13 +121,21 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
 def wczytaj_z_pliku(okno):  #funkcja wybierająca plik
     for widget in okno.winfo_children():
         widget.destroy()
+    global size  # potrzebuje wielkosci, żeby widgety miały odpowiednie wymiary
+    size = (okno.winfo_width(), okno.winfo_height())
     for x in range(10):
         okno.columnconfigure(x, weight=0)
     for x in range(10):
         okno.rowconfigure(x, weight=0)
+    for x in range(3):
+        okno.columnconfigure(x, weight=1)
+    for x in range(4):
+        okno.rowconfigure(x, weight=1)
+    okno.rowconfigure(3, weight=5)
+    okno.columnconfigure(4, weight=1)
     #elementy okna:
     napisTytul = CTkLabel(okno, text="wpisz lokalizacje pliku:")
-    sciezkaWejscie = CTkEntry(okno, width=500)
+    sciezkaWejscie = CTkEntry(okno, width=int(size[0] * 10 / 13))
     przyciskPrzegladaj = CTkButton(okno, text="Przegladaj", command=lambda: przegladaj(okno))
     przyciskSzukaj = CTkButton(okno, text="Szukaj", command=lambda: otwieranie_pliku(okno, sciezkaWejscie.get()))
     przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: interfejs(okno))
@@ -153,13 +161,13 @@ def wczytaj_z_pliku(okno):  #funkcja wybierająca plik
     obraz = CTkLabel(okno, text="", image=img1)
     obraz.grid(row=3, column=0, columnspan=4, sticky=N)
     napisTytul.grid(row=0, column=0, sticky=W+E)
-    sciezkaWejscie.grid(row=1, column=0,rowspan=2, columnspan=5, sticky=W+E)
-    przyciskPrzegladaj.grid(row=1, column=6,pady=3, sticky=W+E)
-    przyciskSzukaj.grid(row=2, column=6,pady=3, sticky=W+E)
-    przyciskWroc.grid(row=3, column=6, sticky=W+E)
+    sciezkaWejscie.grid(row=1, column=0,rowspan=2, columnspan=4, sticky=W+E)
+    przyciskPrzegladaj.grid(row=1, column=4,pady=3, sticky=W+E)
+    przyciskSzukaj.grid(row=2, column=4,pady=3, sticky=W+E)
+    przyciskWroc.grid(row=3, column=4, sticky=W+E)
 def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
 
-    file_path = filedialog.askopenfilename(initialdir="/", title="Wybierz Plik",filetypes=[("Fasta file", "*.fasta")])
+    file_path = filedialog.askopenfilename(title="Wybierz Plik",filetypes=[("All files", "*.*")])
     if(file_path==""):
         wczytaj_z_pliku(okno)
     else:
@@ -168,12 +176,19 @@ def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
 def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pliku
     for widget in okno.winfo_children():
         widget.destroy()
+    for x in range(10):
+        okno.columnconfigure(x, weight=0)
+    for x in range(10):
+        okno.rowconfigure(x, weight=0)
+
+    okno.columnconfigure(0, weight=4)
+    okno.columnconfigure(1, weight=1)
     size = (okno.winfo_width(), okno.winfo_height())
-    ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1] - 50))
+    ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1]))
     Bwidth = (size[0] / 15) * 12
-    ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
+    ramka.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S)
     przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: wczytaj_z_pliku(okno))
-    przyciskWroc.grid(row=0, column=6)
+    przyciskWroc.grid(row=0, column=4)
     if file_path.endswith(".txt"):
         with open(file_path, 'r') as plik:
             zawartosc = plik.read()
@@ -218,6 +233,8 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
                 x = CTkButton(ramka, text=record.id,command=lambda sekwencja=record.seq: otwieranie_testowe(okno, file_path, sekwencja))
                 x.grid(row=i, column=0, sticky=W + E)
                 i+=1
+    else:
+        wczytaj_z_pliku(okno)
 
 def otwieranie_testowe (okno, file_path, sequence):
     global size
@@ -282,11 +299,11 @@ def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     #tworze widgety
     napisMode = CTkLabel(okno, text="zmien kolor tla:")
     napisKolor = CTkLabel(okno, text="zmien kolor przycisków:")
-    napisWroc = CTkLabel(okno, text="wróc do menu:")
+    napisWroc = CTkLabel(okno, text="Wróc do menu:")
     napisPodswietlaj = CTkLabel(okno, text="Podświetlać główny łańcuch:")
     przyciskMode = CTkButton(okno, text=mode, command=lambda: zmien_tryb(okno))#zmienia tryb jasny na ciemny i viceversa
     przyciskKolor = CTkButton(okno, text=base_color, command=lambda: zmien_kolor(okno))#zmienia bazowy kolor
-    przyciskWroc = CTkButton(okno, text="Wróc", command=lambda: zapis(okno))
+    przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: zapis(okno))
     if (czy_podswietlaj == True): #zmienia czy podswietla się główny łańcuch
         przyciskPodswietlaj = CTkButton(okno, text="Tak", command=lambda: podswietlenie(okno))
     else:
