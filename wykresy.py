@@ -5,16 +5,13 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from Bio.SeqUtils.ProtParam import ProtParamData
 import operacje_chemiczne
 import main
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
+from matplotlib.ticker import (MultipleLocator)
 from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors as _rdMolDescriptors
 MolWt = lambda *x,**y:_rdMolDescriptors._CalcMolWt(*x,**y)
-
 
 def pH_bialka(lanc):
     analizuj = ProteinAnalysis(lanc)
@@ -26,15 +23,15 @@ def pH_bialka(lanc):
     elif pH > 6.5:
         return "zasadowe"
 
-def dane_wykres(lanc):
+def dane_wykres(lanc, suwak):
     dane = []
-    # suwak = slider()    w przyszłosci funkcja do ustawiania drugiej zmiennej tego gowna na dole
+    window = int(suwak.get())
     analizuj = ProteinAnalysis(lanc)  # nie ma za uj pojecia co to sa te skale ale brzmi madrze
-    dane.append(analizuj.protein_scale(ProtParamData.kd, 3))  # indeks hydrofobowy
-    dane.append(analizuj.protein_scale(ProtParamData.em, 3))  # surface accessibility
-    dane.append(analizuj.protein_scale(ProtParamData.Flex, 3))  # Normalized flexibility parameters
-    dane.append(analizuj.protein_scale(ProtParamData.ja, 3))  # Janin Interior to surface transfer energy scale
-    dane.append(analizuj.protein_scale(operacje_chemiczne.gra, 3))  # instability index by Grantham R.
+    dane.append(analizuj.protein_scale(ProtParamData.kd, window))  # indeks hydrofobowy
+    dane.append(analizuj.protein_scale(ProtParamData.em, window))  # surface accessibility
+    dane.append(analizuj.protein_scale(ProtParamData.Flex, window))  # Normalized flexibility parameters
+    dane.append(analizuj.protein_scale(ProtParamData.ja, window))  # Janin Interior to surface transfer energy scale
+    dane.append(analizuj.protein_scale(operacje_chemiczne.gra, window))  # instability index by Grantham R.
     dane.append(len(dane[0]))  # pomaga stworzyc oś X w wykresie
     return dane
 
@@ -79,8 +76,8 @@ def checkbox_event5(okno,lanc_Kodonow):
     rysowanie_wykresu(okno,lanc_Kodonow)
 
 def rysowanie_wykresu(okno, lanc_Kodonow):
-    global c1,c2,c3,c4,c5
-    dane_do_wykresu = dane_wykres(lanc_Kodonow)
+    global c1, c2, c3, c4, c5
+    dane_do_wykresu = dane_wykres(lanc_Kodonow, suwak)
     wartości_hydrofobia = (dane_do_wykresu[0])
     wartości_dostępność = (dane_do_wykresu[1])
     wartości_parametry = (dane_do_wykresu[2])
@@ -130,7 +127,7 @@ def rysowanie_wykresu(okno, lanc_Kodonow):
     Wypisz_wykres_cech.set_title('Cechy fizyczno-chemiczne aminokwasów')
 
 def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykresów
-    global c1,c2,c3,c4,c5
+    global c1,c2,c3,c4,c5, suwak
     c1 = 1
     c2 = 1
     c3 = 1
@@ -171,6 +168,11 @@ def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykre
     ramka1 = customtkinter.CTkFrame(master=okno)
     ramka_wykres = customtkinter.CTkFrame(master=okno)
     napis = CTkLabel(okno, text="Właściwości Białka")
+    napiss1 = CTkLabel(ramka_wykres, text="Ustal rozmiar okna (długość interwału")
+    napiss2 = CTkLabel(ramka_wykres, text="używanego do obliczania profilu wykresu)")
+    suwak = CTkSlider(master=ramka_wykres, width=200, from_=2, to=len(lanc_Kodonow)-1, orientation="horizontal")
+    suwak.set(2)    #wartosc domyslna
+    wykresButton = CTkButton(master=ramka_wykres, text="Rysuj", command=lambda: rysowanie_wykresu(okno,lanc_Kodonow))
     returnButton = CTkButton(master=ramka1, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lancpowrotny), width=100)
     DaneButton = CTkButton(master=ramka1, text="Dane", command=lambda: dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny), width=100)
     napis.grid(row=0, column=0, columnspan=2, sticky=E+W)
@@ -180,7 +182,7 @@ def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykre
     DaneButton.grid(row=2, column=0, pady=10)
     check_var1 = tkinter.IntVar(value=1)
     check_var2 = tkinter.IntVar(value=1)
-    check_var3 = tkinter.IntVar(value=1)  #
+    check_var3 = tkinter.IntVar(value=1)
     check_var4 = tkinter.IntVar(value=1)
     check_var5 = tkinter.IntVar(value=1)
     checkbox_indeks_hydrofobowy = customtkinter.CTkCheckBox(master=ramka_wykres, text="Indeks hydrofobowy",text_color='#581266', command=lambda: checkbox_event1(okno,lanc_Kodonow),
@@ -199,6 +201,11 @@ def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykre
     checkbox_zogólnione_parametry_elastyczności.grid(row=4,column=0, rowspan=2,sticky=W,pady=5,padx=5 )
     checkbox_skala_transferu_energii_Janin.grid(row=6,column=0, rowspan=2,sticky=W,pady=5,padx=5 )
     checkbox_indeks_niestabilności.grid(row=8,column=0, rowspan=2,sticky=W,pady=5,padx=5)
+    napiss1.grid(row=10,column=0, rowspan=2,sticky=W,pady=5,padx=5)
+    napiss2.grid(row=11,column=0, rowspan=2,sticky=W,pady=5,padx=5)
+    suwak.grid(row=12,column=0, rowspan=2,sticky=W,pady=5,padx=5)
+    wykresButton.grid(row=14,column=0, rowspan=2,sticky=W,pady=5,padx=5)
+
 def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
     for widget in okno.winfo_children():
         widget.destroy()
@@ -207,7 +214,6 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
     for x in range(10):
         okno.columnconfigure(x,weight=0)
     analizuj = ProteinAnalysis(lanc_Kodonow)
-    mol = Chem.MolFromSmiles(wzor)
     dw = []
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
@@ -219,17 +225,17 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
     elif (analizuj.instability_index() > 40):
         dw.append("białko niestabilne")
     dw.append(MolWt(Chem.MolFromSmiles(wzor)))
-    struktura=dw[0]
+    struktura = dw[0]
     linijka_1 = CTkLabel(okno, text="Na strukturę drugorzędową tego białka składa się:")
-    linijka_2 = CTkLabel(okno, text= str(struktura[0]*100)+"% harmonijek beta (pofałdowanej płaszczyzny)")
-    linijka_3 = CTkLabel(okno, text= str(struktura[1]*100)+"% helis alfa (helis pi)")
-    linijka_4 = CTkLabel(okno, text= str(struktura[2]*100)+"% beta zakrętów (pętli omega)")
-    linijka_5 = CTkLabel(okno, text="Punkt izoelektryczny tego białka wynosi "+str(dw[1]))
-    linijka_6 = CTkLabel(okno, text="W punkcie izoelektrycznym to białko jest "+dw[2])
-    linijka_7 = CTkLabel(okno, text="Indeks niestabilności Guruprasada wynosi "+str(dw[3]))
-    linijka_8 = CTkLabel(okno, text="Jest to "+dw[4])
-    linijka_9 = CTkLabel(okno, text="Masa tego białka wynosi "+str(dw[5]))
-    linijka_1.grid(row=0,column=0, sticky=W)
+    linijka_2 = CTkLabel(okno, text=str(struktura[0] * 100) + "% harmonijek beta (pofałdowanej płaszczyzny)")
+    linijka_3 = CTkLabel(okno, text=str(struktura[1] * 100) + "% helis alfa (helis pi)")
+    linijka_4 = CTkLabel(okno, text=str(struktura[2] * 100) + "% beta zakrętów (pętli omega)")
+    linijka_5 = CTkLabel(okno, text="Punkt izoelektryczny tego białka wynosi " + str(dw[1]))
+    linijka_6 = CTkLabel(okno, text="W punkcie izoelektrycznym to białko jest " + dw[2])
+    linijka_7 = CTkLabel(okno, text="Indeks niestabilności Guruprasada wynosi " + str(dw[3]))
+    linijka_8 = CTkLabel(okno, text="Jest to " + dw[4])
+    linijka_9 = CTkLabel(okno, text="Masa tego białka wynosi " + str(dw[5]))
+    linijka_1.grid(row=0, column=0, sticky=W)
     linijka_2.grid(row=1, column=0, sticky=W)
     linijka_3.grid(row=2, column=0, sticky=W)
     linijka_4.grid(row=3, column=0, sticky=W)
@@ -238,8 +244,6 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
     linijka_7.grid(row=6, column=0, sticky=W)
     linijka_8.grid(row=7, column=0, sticky=W)
     linijka_9.grid(row=8, column=0, sticky=W)
-
-
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lancpowrotny),
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: wykresy(okno, wzor, lanc_Kodonow, lancpowrotny),
                              width=100)
-    returnButton.grid(row=0, column=1)
+    returnButton.grid(row=0, column=0)
