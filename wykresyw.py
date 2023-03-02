@@ -11,6 +11,10 @@ import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
+from rdkit import Chem
+from rdkit.Chem import rdMolDescriptors as _rdMolDescriptors
+MolWt = lambda *x,**y:_rdMolDescriptors._CalcMolWt(*x,**y)
+
 
 def dane_wykres(lanc, suwak):
     dane = []
