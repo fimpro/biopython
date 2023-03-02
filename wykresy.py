@@ -36,7 +36,6 @@ def dane_wykres(lanc):
     return dane
 
 def wyswietl_dane(okno, lanc_Kodonow):
-    kwasowosc = pH_bialka(lanc_Kodonow)
     analizuj = ProteinAnalysis(lanc_Kodonow)
     dw = []
     dw.append(analizuj.secondary_structure_fraction())
