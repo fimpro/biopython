@@ -6,8 +6,8 @@ from rdkit.Chem import Draw
 from rdkit.Chem import rdCoordGen
 import operacje_chemiczne
 import rysowania
-from tkinter import filedialog
 from PIL import Image
+from tkinter import filedialog
 import math
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 mode = "dark"  # zmienna przechowująca tryb aplikacji
@@ -122,13 +122,21 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
 def wczytaj_z_pliku(okno):  #funkcja wybierająca plik
     for widget in okno.winfo_children():
         widget.destroy()
+    global size  # potrzebuje wielkosci, żeby widgety miały odpowiednie wymiary
+    size = (okno.winfo_width(), okno.winfo_height())
     for x in range(10):
         okno.columnconfigure(x, weight=0)
     for x in range(10):
         okno.rowconfigure(x, weight=0)
+    for x in range(3):
+        okno.columnconfigure(x, weight=1)
+    for x in range(4):
+        okno.rowconfigure(x, weight=1)
+    okno.rowconfigure(3, weight=5)
+    okno.columnconfigure(4, weight=1)
     #elementy okna:
     napisTytul = CTkLabel(okno, text="wpisz lokalizacje pliku:")
-    sciezkaWejscie = CTkEntry(okno, width=500)
+    sciezkaWejscie = CTkEntry(okno, width=int(size[0] * 10 / 13))
     przyciskPrzegladaj = CTkButton(okno, text="Przegladaj", command=lambda: przegladaj(okno))
     przyciskSzukaj = CTkButton(okno, text="Szukaj", command=lambda: otwieranie_pliku(okno, sciezkaWejscie.get()))
     przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: interfejs(okno))
@@ -154,13 +162,13 @@ def wczytaj_z_pliku(okno):  #funkcja wybierająca plik
     obraz = CTkLabel(okno, text="", image=img1)
     obraz.grid(row=3, column=0, columnspan=4, sticky=N)
     napisTytul.grid(row=0, column=0, sticky=W+E)
-    sciezkaWejscie.grid(row=1, column=0,rowspan=2, columnspan=5, sticky=W+E)
-    przyciskPrzegladaj.grid(row=1, column=6,pady=3, sticky=W+E)
-    przyciskSzukaj.grid(row=2, column=6,pady=3, sticky=W+E)
-    przyciskWroc.grid(row=3, column=6, sticky=W+E)
+    sciezkaWejscie.grid(row=1, column=0,rowspan=2, columnspan=4, sticky=W+E)
+    przyciskPrzegladaj.grid(row=1, column=4,pady=3, sticky=W+E)
+    przyciskSzukaj.grid(row=2, column=4,pady=3, sticky=W+E)
+    przyciskWroc.grid(row=3, column=4, sticky=W+E)
 def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
 
-    file_path = filedialog.askopenfilename(initialdir="/", title="Wybierz Plik",filetypes=[("Fasta file", "*.fasta")])
+    file_path = filedialog.askopenfilename(title="Wybierz Plik",filetypes=[("All files", "*.*")])
     if(file_path==""):
         wczytaj_z_pliku(okno)
     else:
@@ -169,12 +177,21 @@ def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
 def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pliku
     for widget in okno.winfo_children():
         widget.destroy()
+    for x in range(10):
+        okno.columnconfigure(x, weight=0)
+    for x in range(10):
+        okno.rowconfigure(x, weight=0)
+
+    okno.columnconfigure(0, weight=4)
+    okno.columnconfigure(1, weight=1)
+    okno.rowconfigure(0, weight=1)
     size = (okno.winfo_width(), okno.winfo_height())
-    ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1] - 50))
+    ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1]))
     Bwidth = (size[0] / 15) * 12
-    ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
+    ramka.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S)
     przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: wczytaj_z_pliku(okno))
-    przyciskWroc.grid(row=0, column=6)
+    przyciskWroc.grid(row=0, column=4)
+    ramka.columnconfigure(0,weight=1)
     if file_path.endswith(".txt"):
         with open(file_path, 'r') as plik:
             zawartosc = plik.read()
@@ -199,7 +216,7 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
             napisTytul.grid(row=0, column=0)
             i=0
             for string in headers:
-                x = CTkButton(ramka, text=headers[i], command=lambda numer=i: otwieranie_testowe(okno, file_path, sequences[numer]))
+                x = CTkButton(ramka, text=headers[i], width=(size[0] / 15) * 12-50, command=lambda numer=i: otwieranie_testowe(okno, file_path, sequences[numer]))
                 x.grid(row=i, column=0, sticky=W+E)
                 i+=1
         else:   #jeśli plik nie zaczyna się od > (same geny bez opisu)
@@ -216,9 +233,11 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
         i=0
         with open(file_path, "r") as handle:
             for record in SeqIO.parse(handle, "fasta"):
-                x = CTkButton(ramka, text=record.id,command=lambda sekwencja=record.seq: otwieranie_testowe(okno, file_path, sekwencja))
+                x = CTkButton(ramka, text=record.id, width=(size[0] / 15) * 12-50,command=lambda sekwencja=record.seq: otwieranie_testowe(okno, file_path, sekwencja))
                 x.grid(row=i, column=0, sticky=W + E)
                 i+=1
+    else:
+        wczytaj_z_pliku(okno)
 
 def otwieranie_testowe (okno, file_path, sequence):
     global size
@@ -270,33 +289,6 @@ def otwieranie_testowe (okno, file_path, sequence):
         przycisk_wroc.grid(row=0, column=4, sticky=W+E)
     opis.grid(row=0, column=0, sticky=W+E)
 
-def instrukcja(okno): # funkcja wczytująca instruckje użytkowania
-    for widget in okno.winfo_children():
-         widget.destroy()
-
-    global size
-    size = (okno.winfo_width(), okno.winfo_height())
-    # ustawiam wagi kolumn
-    for x in range(10):
-        okno.columnconfigure(x, weight=0)
-    for x in range(10):
-        okno.rowconfigure(x, weight=0)
-    for x in range(5):
-        okno.columnconfigure(x, weight=2)
-    okno.columnconfigure(5, weight=3)
-    okno.rowconfigure(0, weight=1)
-    okno.rowconfigure(1, weight=1)
-    okno.rowconfigure(2, weight=5)
-    ramka = CTkScrollableFrame(okno, width=500, height=1000)
-    ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
-    for x in range(5):
-        ramka.columnconfigure(x, weight=1)
-
-    napis = CTkLabel(ramka, text="Jak to wlaczysz to wtedy na rysowaniu si podswietla glowny ten taki lancuch", )
-    napis.grid(row=0, column=2, sticky=W + E)
-    img1 = CTkImage(light_image=Image.open(r"C:\Users\User\Desktop\pythonowy_projekt_bialkowy\podswietl.png"), dark_image=Image.open(r"C:\Users\User\Desktop\pythonowy_projekt_bialkowy\podswietl.png"),size=(500, 1000))
-    obraz = CTkLabel(ramka, text="", image=img1)
-    obraz.grid(row=1, column=2, rowspan=3, sticky=NW)
 
 def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     for widget in okno.winfo_children():
@@ -310,11 +302,11 @@ def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     #tworze widgety
     napisMode = CTkLabel(okno, text="zmien kolor tla:")
     napisKolor = CTkLabel(okno, text="zmien kolor przycisków:")
-    napisWroc = CTkLabel(okno, text="wróc do menu:")
+    napisWroc = CTkLabel(okno, text="Wróc do menu:")
     napisPodswietlaj = CTkLabel(okno, text="Podświetlać główny łańcuch:")
     przyciskMode = CTkButton(okno, text=mode, command=lambda: zmien_tryb(okno))#zmienia tryb jasny na ciemny i viceversa
     przyciskKolor = CTkButton(okno, text=base_color, command=lambda: zmien_kolor(okno))#zmienia bazowy kolor
-    przyciskWroc = CTkButton(okno, text="Wróc", command=lambda: zapis(okno))
+    przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: zapis(okno))
     if (czy_podswietlaj == True): #zmienia czy podswietla się główny łańcuch
         przyciskPodswietlaj = CTkButton(okno, text="Tak", command=lambda: podswietlenie(okno))
     else:
@@ -385,8 +377,37 @@ def zmien_kolor(okno):
         interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
 
 
+def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
+    for widget in okno.winfo_children():
+        widget.destroy()
 
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
+    # ustawiam wagi kolumn
+    for x in range(10):
+        okno.columnconfigure(x, weight=0)
+    for x in range(10):
+        okno.rowconfigure(x, weight=0)
+    for x in range(5):
+        okno.columnconfigure(x, weight=2)
+    okno.columnconfigure(5, weight=3)
+    okno.rowconfigure(0, weight=1)
+    okno.rowconfigure(1, weight=1)
+    okno.rowconfigure(2, weight=5)
+    ramka = CTkScrollableFrame(okno, width=500, height=1000)
+    ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
+    for x in range(5):
+        ramka.columnconfigure(x, weight=1)
 
+    napis = CTkLabel(ramka, text="Jak to wlaczysz to wtedy na rysowaniu si podswietla glowny ten taki lancuch", )
+    napis.grid(row=0, column=2, sticky=W + E)
+    img1 = CTkImage(light_image=Image.open(r"C:\Users\User\Desktop\pythonowy_projekt_bialkowy\podswietl.png"),
+                    dark_image=Image.open(r"C:\Users\User\Desktop\pythonowy_projekt_bialkowy\podswietl.png"),
+                    size=(500, 1000))
+    obraz = CTkLabel(ramka, text="", image=img1)
+    obraz.grid(row=1, column=2, rowspan=3, sticky=NW)
+    wrocButton = CTkButton(ramka, text="Wroc", width=15, command=lambda: interfejs(okno))
+    wrocButton.grid(row=0, column=0, sticky=W + E)
 
 if __name__ == '__main__':
     oknoR = CTk()
