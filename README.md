@@ -1,2 +1,2 @@
 # biopython
-dawid ma małego
+No chyba twój stary
