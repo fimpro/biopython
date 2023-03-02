@@ -6,6 +6,7 @@ import wykresy
 from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import rdCoordGen
+from rdkit.Chem import Descriptors
 def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, file_path):
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
@@ -55,7 +56,7 @@ def rysuj_dziwnie_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, fi
     wrocButton = CTkButton(okno, text="wroc", width=(size[0] / 31) * 6,command=lambda: main.otwieranie_testowe(okno, file_path, lancpowrotny))
     wrocButton.grid(row=0, column=1, sticky=W + E)
     WykresyButton = CTkButton(okno, text="wykresy", width=int((size[0] / 31) * 6),
-                              command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow, lancpowrotny))
+                              command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow,file_path, lancpowrotny))
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
 
@@ -148,7 +149,7 @@ def rysuj_szybko_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, fil
             i += 1
     #reszta widgetów
     wrocButton = CTkButton(okno, text="Wroc", width=int((size[0]/31)*6), command=lambda: main.otwieranie_testowe(okno, file_path, lancpowrotny))
-    WykresyButton = CTkButton(okno, text="wykresy",width=int((size[0]/31)*6), command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow, lancpowrotny))
+    WykresyButton = CTkButton(okno, text="wykresy",width=int((size[0]/31)*6), command=lambda: wykresy.wykresy(okno, Smiles, lanc_Kodonow,file_path, lancpowrotny))
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
     wrocButton.grid(row=0, column=1, sticky=W + E)
@@ -157,11 +158,17 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, file_path)
     size = (okno.winfo_width(), okno.winfo_height())
     for widget in okno.winfo_children():  # czyscimy okno
         widget.destroy()
+    for x in range(10):
+        okno.rowconfigure(x,weight=0)
+    for x in range(10):
+        okno.columnconfigure(x,weight=0)
     okno.columnconfigure(0, weight=10)
     okno.columnconfigure(1, weight=3)
-
+    for x in range(6):
+        okno.rowconfigure(x,weight=1)
     Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(lanc_Kodonow) #uzyskujemy wzór smiles
     mol = Chem.MolFromSmiles(Smiles) #tworzymy obiekt mol
+    masa=Descriptors.MolWt(mol)
     rdCoordGen.AddCoords(mol) #uwzględniamy coordynaty 2D
     #rysujemy obrazek (z opcją podświetlania lub bez)
     if (czy_podswietlaj):
@@ -175,8 +182,10 @@ def rysuj_interface(okno, lanc_Kodonow, lancpowrotny,czy_podswietlaj, file_path)
     #wrzucamy widgety na okno, tworzymy przyciski
     wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int(size[0]*10/13),int(size[1])))
     WrocButton = CTkButton(okno, text="wroc", command=lambda: main.otwieranie_testowe(okno, file_path, lancpowrotny),width=size[0]*3/13)
-    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy.wykresy(okno, Smiles,lanc_Kodonow, lancpowrotny))
+    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy.wykresy(okno, Smiles,lanc_Kodonow,file_path, lancpowrotny))
+    masaWypisz=CTkLabel(okno,text="masa cząsteczki: "+str(round(masa,4)))
     obraz = CTkLabel(okno, image=wzor_strukturalny, text="")
     obraz.grid(row=0, column=0, rowspan=6)
-    WrocButton.grid(row=0, column=1,sticky=E+W)
-    WykresyButton.grid(row=1, column=1,sticky=E+W)
+    WrocButton.grid(row=4, column=1,sticky=E+W)
+    WykresyButton.grid(row=0, column=1,sticky=E+W)
+    masaWypisz.grid(row=2,column=1)

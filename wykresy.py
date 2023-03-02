@@ -126,7 +126,7 @@ def rysowanie_wykresu(okno, lanc_Kodonow):
 
     Wypisz_wykres_cech.set_title('Cechy fizyczno-chemiczne aminokwasów')
 
-def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykresów
+def wykresy(okno, wzor, lanc_Kodonow,file_path, lancpowrotny):  # robocza funkcja do wykresów
     global c1,c2,c3,c4,c5, suwak
     c1 = 1
     c2 = 1
@@ -173,8 +173,8 @@ def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykre
     suwak = CTkSlider(master=ramka_wykres, width=200, from_=2, to=len(lanc_Kodonow)-1, orientation="horizontal")
     suwak.set(2)    #wartosc domyslna
     wykresButton = CTkButton(master=ramka_wykres, text="Rysuj", command=lambda: rysowanie_wykresu(okno,lanc_Kodonow))
-    returnButton = CTkButton(master=ramka1, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lancpowrotny), width=100)
-    DaneButton = CTkButton(master=ramka1, text="Dane", command=lambda: dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny), width=100)
+    returnButton = CTkButton(master=ramka1, text="Wróć", command=lambda: main.otwieranie_testowe(okno,file_path, lancpowrotny), width=100)
+    DaneButton = CTkButton(master=ramka1, text="Dane", command=lambda: dane_interfejs(okno, wzor, lanc_Kodonow,file_path, lancpowrotny), width=100)
     napis.grid(row=0, column=0, columnspan=2, sticky=E+W)
     ramka1.grid(row=1,column=1,sticky=N+W+E+S)
     ramka_wykres.grid(row=2,column=1,sticky=N+W+E+S)
@@ -206,7 +206,7 @@ def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykre
     suwak.grid(row=12,column=0, rowspan=2,sticky=W,pady=5,padx=5)
     wykresButton.grid(row=14,column=0, rowspan=2,sticky=W,pady=5,padx=5)
 
-def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
+def dane_interfejs(okno, wzor, lanc_Kodonow,file_path, lancpowrotny):
     for widget in okno.winfo_children():
         widget.destroy()
     for x in range(10):
@@ -244,6 +244,6 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
     linijka_7.grid(row=6, column=0, sticky=W)
     linijka_8.grid(row=7, column=0, sticky=W)
     linijka_9.grid(row=8, column=0, sticky=W)
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: wykresy(okno, wzor, lanc_Kodonow, lancpowrotny),
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: wykresy(okno, wzor, lanc_Kodonow,file_path, lancpowrotny),
                              width=100)
-    returnButton.grid(row=0, column=0)
+    returnButton.grid(row=10, column=1)

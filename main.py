@@ -183,12 +183,14 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
 
     okno.columnconfigure(0, weight=4)
     okno.columnconfigure(1, weight=1)
+    okno.rowconfigure(0, weight=1)
     size = (okno.winfo_width(), okno.winfo_height())
     ramka = CTkScrollableFrame(okno, width=(size[0] / 15) * 12, height=(size[1]))
     Bwidth = (size[0] / 15) * 12
     ramka.grid(row=0, column=0, columnspan=4, sticky=E + W + N + S)
     przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: wczytaj_z_pliku(okno))
     przyciskWroc.grid(row=0, column=4)
+    ramka.columnconfigure(0,weight=1)
     if file_path.endswith(".txt"):
         with open(file_path, 'r') as plik:
             zawartosc = plik.read()
@@ -213,7 +215,7 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
             napisTytul.grid(row=0, column=0)
             i=0
             for string in headers:
-                x = CTkButton(ramka, text=headers[i], command=lambda numer=i: otwieranie_testowe(okno, file_path, sequences[numer]))
+                x = CTkButton(ramka, text=headers[i], width=(size[0] / 15) * 12-50, command=lambda numer=i: otwieranie_testowe(okno, file_path, sequences[numer]))
                 x.grid(row=i, column=0, sticky=W+E)
                 i+=1
         else:   #jeśli plik nie zaczyna się od > (same geny bez opisu)
@@ -230,7 +232,7 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
         i=0
         with open(file_path, "r") as handle:
             for record in SeqIO.parse(handle, "fasta"):
-                x = CTkButton(ramka, text=record.id,command=lambda sekwencja=record.seq: otwieranie_testowe(okno, file_path, sekwencja))
+                x = CTkButton(ramka, text=record.id, width=(size[0] / 15) * 12-50,command=lambda sekwencja=record.seq: otwieranie_testowe(okno, file_path, sekwencja))
                 x.grid(row=i, column=0, sticky=W + E)
                 i+=1
     else:
