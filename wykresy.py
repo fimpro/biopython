@@ -36,6 +36,7 @@ def dane_wykres(lanc):
     return dane
 
 def wyswietl_dane(okno, lanc_Kodonow):
+    kwasowosc = pH_bialka(lanc_Kodonow)
     analizuj = ProteinAnalysis(lanc_Kodonow)
     dw = []
     dw.append(analizuj.secondary_structure_fraction())
@@ -49,47 +50,22 @@ def wyswietl_dane(okno, lanc_Kodonow):
         dw.append("Białko niestabilne")
     print(dw)
 
-def checkbox_event1():
-    print("no to zmieniamy 1")
+def checkbox_event1(check_var):
+    print(check_var)
 
-def checkbox_event2():
-    print("a teraz 2")
+def checkbox_event2(check_var):
+    print(check_var)
 
-def checkbox_event3():
-    print("następnie 3")
+def checkbox_event3(check_var):
+    print(check_var)
 
-def checkbox_event4():
-    print("i jeszcze 4")
+def checkbox_event4(check_var):
+    print(check_var)
 
-def checkbox_event5():
-    print("na koniec 5")
+def checkbox_event5(check_var):
+    print(check_var)
 
-def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykresów
-
-    for widget in okno.winfo_children():
-        widget.destroy()
-
-    analizuj = ProteinAnalysis(lancpowrotny)  # tablica do analizowania bialek
-    # pojedyncze wartości
-
-    dane_kwasy = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
-    lista = []
-    for i in dane_kwasy:   dane_kwasy[i] = dane_kwasy[i] * 100
-    for i in dane_kwasy:
-        lista.append(dane_kwasy.get(i))
-    dane = {'Aminokwas': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
-                          'Y', ],
-            'Częstotliwość występowania': lista}
-
-    Obraz_aminokwasów = plt.Figure(figsize=(10, 4), dpi=50)
-    Wypisz_wykres_aminokwasów = Obraz_aminokwasów.add_subplot(1, 1, 1)
-    Wykres_aminokwasów = FigureCanvasTkAgg(Obraz_aminokwasów, okno)
-    Wykres_aminokwasów.get_tk_widget().grid(row=1, column=0)
-    Dane_aminokwasów = pd.DataFrame(dane)
-    Dane_aminokwasów = Dane_aminokwasów[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
-    Dane_aminokwasów.plot(kind='bar', legend=False, ax=Wypisz_wykres_aminokwasów)
-    Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
-
+def rysowanie_wykresu(okno, lanc_Kodonow, warunek1, warunek2, warunek3, warunek4, warunek5):
     dane_do_wykresu = dane_wykres(lanc_Kodonow)
     wartości_hydrofobia = (dane_do_wykresu[0])
     wartości_dostępność = (dane_do_wykresu[1])
@@ -111,26 +87,59 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
     Wykres_szczegółowy.get_tk_widget().grid(row=2, column=0)
     Dane_indeks_hydrofobowy = pd.DataFrame(dane_hydrofobia)
     Dane_indeks_hydrofobowy = Dane_indeks_hydrofobowy[['Aminokwasy', 'Indeks hydrofobowy']].groupby('Aminokwasy').sum()
-    Dane_indeks_hydrofobowy.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#581266')
+    if warunek1=="on":
+        Dane_indeks_hydrofobowy.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#581266')
     Dane_dostępność_powierzchniowa = pd.DataFrame(dane_dostępność)
     Dane_dostępność_powierzchniowa = Dane_dostępność_powierzchniowa[
         ['Aminokwasy', 'Dostępność powierzchniowa']].groupby('Aminokwasy').sum()
-    Dane_dostępność_powierzchniowa.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#3fc2d1')
+    if warunek2 == "on":
+        Dane_dostępność_powierzchniowa.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#3fc2d1')
     Dane_zogólnione_parametry_elastyczności = pd.DataFrame(dane_parametry)
     Dane_zogólnione_parametry_elastyczności = Dane_zogólnione_parametry_elastyczności[
         ['Aminokwasy', 'Zogólnione parametry elastyczności']].groupby('Aminokwasy').sum()
-    Dane_zogólnione_parametry_elastyczności.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#057a13')
+    if warunek3 == "on":
+        Dane_zogólnione_parametry_elastyczności.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#057a13')
     Dane_skala_transferu_energii_Janin = pd.DataFrame(dane_skala)
     Dane_skala_transferu_energii_Janin = Dane_skala_transferu_energii_Janin[
         ['Aminokwasy', 'Skala Janin transferu energii']].groupby('Aminokwasy').sum()
-    Dane_skala_transferu_energii_Janin.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#db1a1a')
+    if warunek4 == "on":
+        Dane_skala_transferu_energii_Janin.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#db1a1a')
     Dane_indeks_niestabilności = pd.DataFrame(dane_niestabilność)
     Dane_indeks_niestabilności = Dane_indeks_niestabilności[
         ['Aminokwasy', 'indeks niestabilności Granthama R.']].groupby('Aminokwasy').sum()
     Wypisz_wykres_cech.xaxis.set_minor_locator(MultipleLocator(1))
     Wypisz_wykres_cech.yaxis.set_minor_locator(MultipleLocator(1))
-    Dane_indeks_niestabilności.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#d0e831')
+    if warunek5 == "on":
+        Dane_indeks_niestabilności.plot(kind='line', legend=False, ax=Wypisz_wykres_cech, color='#d0e831')
     Wypisz_wykres_cech.set_title('Cechy fizyczno-chemiczne aminokwasów')
+
+def wykresy(okno, wzor, lanc_Kodonow, lancpowrotny):  # robocza funkcja do wykresów
+
+    for widget in okno.winfo_children():
+        widget.destroy()
+
+    analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
+    # pojedyncze wartości
+
+    dane_kwasy = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
+    lista = []
+    for i in dane_kwasy:   dane_kwasy[i] = dane_kwasy[i] * 100
+    for i in dane_kwasy:
+        lista.append(dane_kwasy.get(i))
+    dane = {'Aminokwas': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
+                          'Y', ],
+            'Częstotliwość występowania': lista}
+
+    Obraz_aminokwasów = plt.Figure(figsize=(10, 4), dpi=50)
+    Wypisz_wykres_aminokwasów = Obraz_aminokwasów.add_subplot(1, 1, 1)
+    Wykres_aminokwasów = FigureCanvasTkAgg(Obraz_aminokwasów, okno)
+    Wykres_aminokwasów.get_tk_widget().grid(row=1, column=0)
+    Dane_aminokwasów = pd.DataFrame(dane)
+    Dane_aminokwasów = Dane_aminokwasów[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
+    Dane_aminokwasów.plot(kind='bar', legend=False, ax=Wypisz_wykres_aminokwasów)
+    Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
+
+
     ramka1 = customtkinter.CTkFrame(master=okno, width=100, height=200)
     ramka_wykres = customtkinter.CTkFrame(master=okno, width=100, height=250)
     napis = CTkLabel(okno, text=wzor)
@@ -149,16 +158,17 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
     check_var3 = tkinter.StringVar(value="on")  #
     check_var4 = tkinter.StringVar(value="on")
     check_var5 = tkinter.StringVar(value="on")
-    checkbox_indeks_hydrofobowy = customtkinter.CTkCheckBox(master=ramka_wykres, text="Indeks hydrofobowy",text_color='#581266', command=checkbox_event1,
+    checkbox_indeks_hydrofobowy = customtkinter.CTkCheckBox(master=ramka_wykres, text="Indeks hydrofobowy",text_color='#581266', command=lambda: checkbox_event1(check_var1.get()),
                                          variable=check_var1, onvalue="on", offvalue="off")
-    checkbox_dostępność_powierzchniowa = customtkinter.CTkCheckBox(master=ramka_wykres, text="Dostępność powierzchniowa",text_color='#3fc2d1', command=checkbox_event2,
+    checkbox_dostępność_powierzchniowa = customtkinter.CTkCheckBox(master=ramka_wykres, text="Dostępność powierzchniowa",text_color='#3fc2d1', command=lambda: checkbox_event2(check_var2.get()),
                                          variable=check_var2, onvalue="on", offvalue="off")
-    checkbox_zogólnione_parametry_elastyczności = customtkinter.CTkCheckBox(master=ramka_wykres, text="Zogólnione parametry elastyczności",text_color='#057a13', command=checkbox_event3,
+    checkbox_zogólnione_parametry_elastyczności = customtkinter.CTkCheckBox(master=ramka_wykres, text="Zogólnione parametry elastyczności",text_color='#057a13', command=lambda: checkbox_event3(check_var3.get()),
                                          variable=check_var3, onvalue="on", offvalue="off")
-    checkbox_skala_transferu_energii_Janin = customtkinter.CTkCheckBox(master=ramka_wykres, text="Skala Janin transferu energii",text_color='#db1a1a', command=checkbox_event4,
+    checkbox_skala_transferu_energii_Janin = customtkinter.CTkCheckBox(master=ramka_wykres, text="Skala Janin transferu energii",text_color='#db1a1a', command=lambda: checkbox_event4(check_var4.get()),
                                          variable=check_var4, onvalue="on", offvalue="off")
-    checkbox_indeks_niestabilności = customtkinter.CTkCheckBox(master=ramka_wykres, text="Indeks niestabilności Granthama R.",text_color='#d0e831', command=checkbox_event5,
+    checkbox_indeks_niestabilności = customtkinter.CTkCheckBox(master=ramka_wykres, text="Indeks niestabilności Granthama R.",text_color='#d0e831', command=lambda: checkbox_event5(check_var5.get()),
                                          variable=check_var5, onvalue="on", offvalue="off")
+    rysowanie_wykresu(okno,lanc_Kodonow,check_var1.get(),check_var2.get(),check_var3.get(),check_var4.get(),check_var5.get())
     checkbox_indeks_hydrofobowy.grid(row=0,column=0,rowspan=2,sticky=W,pady=5,padx=5 )
     checkbox_dostępność_powierzchniowa.grid(row=2,column=0,rowspan=2,sticky=W,pady=5,padx=5 )
     checkbox_zogólnione_parametry_elastyczności.grid(row=4,column=0, rowspan=2,sticky=W,pady=5,padx=5 )
