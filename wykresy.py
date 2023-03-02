@@ -36,9 +36,6 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
         widget.destroy()
 
     analizuj = ProteinAnalysis(lanc_Kodonow)  # tablica do analizowania bialek
-    dane_kwasy = []
-    dane_kwasy.append(analizuj.count_amino_acids())   #ilosc kazdego z kwasow
-    dane_kwasy.append(analizuj.get_amino_acids_percent())   #procent kazdego z kwasow
     # pojedyncze wartości
     dw = []
     dw.append(analizuj.secondary_structure_fraction())
@@ -49,11 +46,11 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
         dw.append("Białko stabilne")
     elif (analizuj.instability_index() > 40):
         dw.append("Białko niestabilne")
-    dane_kwasy1 = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
+    dane_kwasy = analizuj.get_amino_acids_percent()  # ilosc kazdego z kwasow
     lista = []
-    for i in dane_kwasy1:   dane_kwasy1[i] = dane_kwasy1[i] * 100
-    for i in dane_kwasy1:
-        lista.append(dane_kwasy1.get(i))
+    for i in dane_kwasy:   dane_kwasy[i] = dane_kwasy[i] * 100
+    for i in dane_kwasy:
+        lista.append(dane_kwasy.get(i))
     dane = {'Aminokwas':['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y',],
             'Częstotliwość występowania':lista}
 
@@ -102,12 +99,12 @@ def wykresy(okno, wzor, lancpowrotny, lanc_Kodonow):  # robocza funkcja do wykre
     Dane_indeks_niestabilności.plot(kind='line', legend=True, ax=Wypisz_wykres_cech)
     Wypisz_wykres_cech.set_title('Cechy fizyczno-chemiczne aminokwasów')
     
-    napis = CTkLabel(okno, text="", width=100)    #dopisać wzór tam gdzie puste!!!
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: rysuj_interface(okno, lanc_Kodonow, lancpowrotny))
-    AtomyButton = CTkButton(okno, text="Ilość Atomów", command=lambda: WypiszAtomy(okno,wzor, lanc_Kodonow, lancpowrotny))
-    napis.grid(row=0, column=0)
-    returnButton.grid(row=1, column=0)
-    AtomyButton.grid(row=2, column=0)
+    napis = CTkLabel(okno, text=wzor, width=550)
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: main.wczytaj_recznie(okno, lanc_powrotny), width=100)
+    AtomyButton = CTkButton(okno, text="Ilość Atomów", command=lambda: WypiszAtomy(okno,wzor, lanc_kodonow, lanc_powrotny), width=100)
+    napis.grid(row=0, column=0, sticky=W+E)
+    returnButton.grid(row=0, column=1, sticky=W+E)
+    AtomyButton.grid(row=1, column=1, sticky=W+E)
 
 def WypiszAtomy(okno, wzor,lancpowrotny, lanc_Kodonow):
     for widget in okno.winfo_children():
