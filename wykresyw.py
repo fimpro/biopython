@@ -218,6 +218,7 @@ def dane_interfejs(okno, wzor, lanc_Kodonow, lancpowrotny):
         dw.append("Białko stabilne")
     elif (analizuj.instability_index() > 40):
         dw.append("Białko niestabilne")
+    dw.append(MolWt(Chem.MolFromSmiles(wzor)))
     print(dw)
     returnButton = CTkButton(okno, text="Wróć", command=lambda: wykresy(okno, wzor, lanc_Kodonow, lancpowrotny),
                              width=100)
