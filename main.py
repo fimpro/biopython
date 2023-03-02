@@ -58,8 +58,8 @@ def interfejs(okno):  # funkcja obsługująca główny interfejs programu(menu w
          obrazStartowy = Draw.MolToImage(mol, highlightBonds=hit_bonds, highlightAtoms=atomy, highlightColor=((0, 1, 0)),
                                          size=(int(size[0]*10/13),int(size[1]))) #wyrażenie dostosowywuje rozmiar obrazka do okna, niestety nie dynamicznie :(
     else:
-         obrazStartowy = Draw.MolToImage(mol, size=(500, 500))
-    img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(500, 500))
+         obrazStartowy = Draw.MolToImage(mol, size=(int(size[0]*10/13),int(size[1])))
+    img1 = CTkImage(light_image=obrazStartowy, dark_image=obrazStartowy, size=(int(size[0]*10/13),int(size[1])))
     #wrzucam rysunek w okno
     obraz = CTkLabel(okno, text="", image=img1)
     obraz.grid(row=0, column=1, rowspan=10,sticky=NW)
@@ -90,7 +90,7 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
 
     opis = CTkLabel(okno, text="Wpisz kod nici RNA lub DNA:", width=((size[0]*2)/15))
     szukajButton = CTkButton(okno, text="Szukaj Białek", width=((size[0]*3)/15), command=lambda: otwieranie_testowe(okno, file_path, wejscie.get())) #wyszukuje bialka w wpisanym lancuchu, i rysuje je w ramce
-    wrocButton = CTkButton(okno, text="Wroc", width=15, command=lambda: interfejs(okno))
+    wrocButton = CTkButton(okno, text="Wróć", width=15, command=lambda: interfejs(okno))
 
     wzor, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow("MPPPPPPPNACR")
     # tworze obiekt molecule który później rysuje
@@ -241,6 +241,14 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
 def otwieranie_testowe (okno, file_path, sequence):
     global size
     size = (okno.winfo_width(), okno.winfo_height())
+    for x in range(10):
+        okno.rowconfigure(x,weight=0)
+    for x in range(10):
+        okno.columnconfigure(x,weight=0)
+    for x in range(4):
+        okno.columnconfigure(x, weight=1)
+    okno.rowconfigure(1,weight=1)
+    okno.rowconfigure(0, weight=0)
     def rysuj_przyciski(i, bialka,przesuniecie):
         for x in bialka:
             if (len(x) > 10):
@@ -250,13 +258,13 @@ def otwieranie_testowe (okno, file_path, sequence):
                 Label = CTkLabel(ramka, text=(x + " P:"+przesuniecie))
                 Label.grid(row=i, column=0)
             Button = CTkButton(ramka, text="G.szybko",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, czy_podswietlaj))
+                          command=lambda y=x: rysowania.rysuj_szybko_interface(okno, y, czy_podswietlaj,size))
             Button.grid(row=i, column=1, sticky=W+E)
             Button = CTkButton(ramka, text="Generuj",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_interface(okno, y, czy_podswietlaj))
+                          command=lambda y=x: rysowania.rysuj_interface(okno, y, czy_podswietlaj,size))
             Button.grid(row=i, column=2, sticky=W+E)
             Button = CTkButton(ramka, text="G.dziwnie",width=(size[0] / 15) * 2,
-                          command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, czy_podswietlaj))
+                          command=lambda y=x: rysowania.rysuj_dziwnie_interface(okno, y, czy_podswietlaj,size))
             Button.grid(row=i, column=3, sticky=W+E)
             i += 1
         return i
@@ -281,7 +289,7 @@ def otwieranie_testowe (okno, file_path, sequence):
     i = rysuj_przyciski(i, bialka3,"2")
     opis = CTkLabel(okno, text="Wybierz co chcesz przeanalizować:")
     if(file_path=="x"):
-        przycisk_wroc = CTkButton(okno, text="wstecz", command=lambda: wczytaj_recznie(okno, sequence))
+        przycisk_wroc = CTkButton(okno, text="Wstecz", command=lambda: wczytaj_recznie(okno, sequence))
         przycisk_wroc.grid(row=0, column=4, sticky=W+E)
     else:
         przycisk_wroc = CTkButton(okno, text="wstecz", command=lambda: otwieranie_pliku(okno, file_path))
@@ -299,10 +307,10 @@ def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
         okno.rowconfigure(x, weight=0)
     okno.columnconfigure(0,weight=1)
     #tworze widgety
-    napisMode = CTkLabel(okno, text="zmien kolor tla:")
-    napisKolor = CTkLabel(okno, text="zmien kolor przycisków:")
-    napisWroc = CTkLabel(okno, text="Wróc do menu:")
-    napisPodswietlaj = CTkLabel(okno, text="Podświetlać główny łańcuch:")
+    napisMode = CTkLabel(okno, text="Zmień kolor tła:")
+    napisKolor = CTkLabel(okno, text="Zmień kolor przycisków:")
+    napisWroc = CTkLabel(okno, text="Wróć do menu:")
+    napisPodswietlaj = CTkLabel(okno, text="Czy podświetlać główny łańcuch:")
     przyciskMode = CTkButton(okno, text=mode, command=lambda: zmien_tryb(okno))#zmienia tryb jasny na ciemny i viceversa
     przyciskKolor = CTkButton(okno, text=base_color, command=lambda: zmien_kolor(okno))#zmienia bazowy kolor
     przyciskWroc = CTkButton(okno, text="Wstecz", command=lambda: zapis(okno))

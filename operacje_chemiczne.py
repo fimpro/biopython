@@ -109,28 +109,6 @@ def rozklad_na_bialka(lanc): #funkcja przyjmująca łańcuch kodonów, a zwracaj
     if(not(czy_skonczone)):
         bialka.pop()
     return bialka
-def indeks_hydrofobowy(lanc_kodonow):  # funkcja ze słownikiem zwraca gotowe tablice do wykorzystwania w wykresie
-    kd = {'A': 1.8, 'R': -4.5, 'N': -3.5, 'D': -3.5, 'C': 2.5,
-          'Q': -3.5, 'E': -3.5, 'G': -0.4, 'H': -3.2, 'I': 4.5,
-          'L': 3.8, 'K': -3.9, 'M': 1.9, 'F': 2.8, 'P': -1.6,
-          'S': -0.8, 'T': -0.7, 'W': -0.9, 'Y': -1.3, 'V': 4.2}
-    dane_y = []
-    for x in lanc_kodonow:
-        dane_y.append(kd[x])
-    return dane_y
-def listaAtomow(wzor):
-    mol=Chem.MolFromSmiles(wzor)
-    for atom in mol.GetAtoms():
-        print(atom.GetAtomicNum())
-def indeks_hydrofobowy(lanc_kodonow):  # funkcja ze słownikiem zwraca gotowe tablice do wykorzystwania w wykresie
-    kd = {'A': 1.8, 'R': -4.5, 'N': -3.5, 'D': -3.5, 'C': 2.5,
-          'Q': -3.5, 'E': -3.5, 'G': -0.4, 'H': -3.2, 'I': 4.5,
-          'L': 3.8, 'K': -3.9, 'M': 1.9, 'F': 2.8, 'P': -1.6,
-          'S': -0.8, 'T': -0.7, 'W': -0.9, 'Y': -1.3, 'V': 4.2}
-    dane_y = []
-    for x in lanc_kodonow:
-        dane_y.append(kd[x])
-    return dane_y
 def polarnosc(lanc): #słownik z polarnościa -> tablica do wykresu
     pol = {
         'A': 0,

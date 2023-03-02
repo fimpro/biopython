@@ -7,14 +7,11 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import rdCoordGen
 from rdkit.Chem import Descriptors
-def rysuj_dziwnie_interface(ramex, lanc_Kodonow,czy_podswietlaj):
+def rysuj_dziwnie_interface(ramex, lanc_Kodonow,czy_podswietlaj,size):
     okno= CTkFrame(ramex)
     okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
-    size = (okno.winfo_width(), okno.winfo_height())
-    if (size[0] < 650 or size[1] < 500):  # przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
-        size = (650, 500)
     #ustawiam okno
     for x in range(10):
         okno.columnconfigure(x,weight=0)
@@ -38,6 +35,7 @@ def rysuj_dziwnie_interface(ramex, lanc_Kodonow,czy_podswietlaj):
     #tworzymy ramke gdzie wrzucimy obrazy
     obrazy=CTkScrollableFrame(okno,width=(int((size[0]/31)*25)),height=size[1])
     obrazy.grid(row=0,column=0,rowspan=2,sticky=W+E+S+N)
+    obrazy.columnconfigure(0,weight=1)
     #standardowo rysujemy każde białko, a następnie wklejami do ramki
     for x in bialeczka:
         Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(x)
@@ -65,19 +63,13 @@ def rysuj_dziwnie_interface(ramex, lanc_Kodonow,czy_podswietlaj):
     WykresyButton.grid(row=1, column=1, sticky=W + E)
 def zniszcz(okno):
     okno.destroy()
-def rysuj_szybko_interface(ramex, lanc_Kodonow,czy_podswietlaj):
+def rysuj_szybko_interface(ramex, lanc_Kodonow,czy_podswietlaj,size):
     okno = CTkFrame(ramex)
     okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
-    size = (okno.winfo_width(), okno.winfo_height())
-    if (size[0] < 650 or size[1] < 500):  # przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
-        size = (650, 500)
-    for widget in okno.winfo_children():  # czycimy okno
-        widget.destroy()
     # to jest lista bialek pelnych typu bialka = ('MIIIIIIII','MIIF')
     # bialka to lista jkbc
-
     # resetujemy formatowanie okna i tworzymy nowe
     for x in range(10):
         okno.columnconfigure(x, weight=0)
@@ -164,24 +156,21 @@ def rysuj_szybko_interface(ramex, lanc_Kodonow,czy_podswietlaj):
 
     WykresyButton.grid(row=1, column=1, sticky=W + E)
     wrocButton.grid(row=0, column=1, sticky=W + E)
-def rysuj_interface(ramex, lanc_Kodonow,czy_podswietlaj): #funkcja rysująca cały łancuch polipeptydowy w jednym obrazku
+def rysuj_interface(ramex, lanc_Kodonow,czy_podswietlaj,size): #funkcja rysująca cały łancuch polipeptydowy w jednym obrazku
     okno = CTkFrame(ramex)
     okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
     for widget in okno.winfo_children():  # czycimy okno
         widget.destroy()
-    size = (okno.winfo_width(), okno.winfo_height())
-    if (size[0] < 650 or size[1] < 500):  # przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
-        size = (650, 500)
     for widget in okno.winfo_children():  # czyscimy okno
         widget.destroy()
     for x in range(10):
-        okno.rowconfigure(x,weight=0)
+        okno.columnconfigure(x, weight=0)
     for x in range(10):
-        okno.columnconfigure(x,weight=0)
-    okno.columnconfigure(0, weight=10)
-    okno.columnconfigure(1, weight=3)
-    for x in range(6):
-        okno.rowconfigure(x,weight=1)
+        okno.rowconfigure(x, weight=0)
+    okno.columnconfigure(0, weight=25)
+    okno.columnconfigure(1, weight=6)
+    okno.rowconfigure(0, weight=1)
+    okno.rowconfigure(1, weight=1)
     Smiles, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow(lanc_Kodonow) #uzyskujemy wzór smiles
     mol = Chem.MolFromSmiles(Smiles) #tworzymy obiekt mol
     if(len(lanc_Kodonow)<40):
@@ -197,9 +186,9 @@ def rysuj_interface(ramex, lanc_Kodonow,czy_podswietlaj): #funkcja rysująca ca�
         obraz = Draw.MolToImage(mol, size=(int(size[0]*10/13),int(size[1])))
     #wrzucamy widgety na okno, tworzymy przyciski
     wzor_strukturalny = CTkImage(light_image=obraz, dark_image=obraz, size=(int(size[0]*10/13),int(size[1])))
-    WrocButton = CTkButton(okno, text="wroc", command=lambda: zniszcz(okno),width=size[0]*3/13)
-    WykresyButton = CTkButton(okno, text="wykresy", command=lambda: wykresy.wykresy(okno, Smiles,lanc_Kodonow))
+    WrocButton = CTkButton(okno, text="Wróć", command=lambda: zniszcz(okno),width=size[0]*3/13)
+    WykresyButton = CTkButton(okno, text="Wykresy", command=lambda: wykresy.wykresy(okno, Smiles,lanc_Kodonow))
     obraz = CTkLabel(okno, image=wzor_strukturalny, text="")
-    obraz.grid(row=0, column=0, rowspan=6)
-    WrocButton.grid(row=4, column=1,sticky=E+W)
-    WykresyButton.grid(row=0, column=1,sticky=E+W)
+    obraz.grid(row=0, column=0, rowspan=2)
+    WrocButton.grid(row=0, column=1,sticky=E+W)
+    WykresyButton.grid(row=1, column=1,sticky=E+W)
