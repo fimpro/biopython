@@ -13,6 +13,16 @@ from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors as _rdMolDescriptors
 MolWt = lambda *x,**y:_rdMolDescriptors._CalcMolWt(*x,**y)
 
+def pH_bialka(lanc):
+    analizuj = ProteinAnalysis(lanc)
+    pH = (analizuj.isoelectric_point())
+    if pH < 5.0:
+        return "kwasowe"
+    elif 5.0 <= pH <= 6.5:
+        return "obojętne"
+    elif pH > 6.5:
+        return "zasadowe"
+
 def dane_wykres(lanc, suwak):
     dane = []
     window = int(suwak.get())
@@ -125,8 +135,6 @@ def wykresy(ramex, wzor, lanc_Kodonow):  # robocza funkcja do wykresów
     c5 = 1
     okno = CTkFrame(ramex)
     okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
-    for widget in okno.winfo_children():  # czycimy okno
-        widget.destroy()
     size = (okno.winfo_width(), okno.winfo_height())
     if (size[0] < 650 or size[1] < 500):  # przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
         size = (650, 500)
@@ -203,7 +211,14 @@ def wykresy(ramex, wzor, lanc_Kodonow):  # robocza funkcja do wykresów
     suwak.grid(row=12,column=0, rowspan=2,sticky=W,pady=5,padx=5)
     wykresButton.grid(row=14,column=0, rowspan=2,sticky=W,pady=5,padx=5)
 
-def dane_interfejs(okno, wzor, lanc_Kodonow):
+def dane_interfejs(ramex, wzor, lanc_Kodonow):
+    okno = CTkFrame(ramex)
+    okno.grid(row=0, column=0, rowspan=10, columnspan=10, sticky=N + W + S + E)
+    size = (okno.winfo_width(), okno.winfo_height())
+    if (size[0] < 650 or size[1] < 500):  # przy pierwszym włączeniu jest bug funkcji winfo, wynik to zawsze (200,200)
+        size = (650, 500)
+    for widget in okno.winfo_children():  # czyscimy okno
+        widget.destroy()
     for widget in okno.winfo_children():
         widget.destroy()
     for x in range(10):
@@ -215,7 +230,7 @@ def dane_interfejs(okno, wzor, lanc_Kodonow):
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
     dw.append(analizuj.isoelectric_point())
-    dw.append(operacje_chemiczne.pH_bialka(lanc_Kodonow))
+    dw.append(pH_bialka(lanc_Kodonow))
     dw.append(analizuj.instability_index())
     if (analizuj.instability_index() <= 40):
         dw.append("białko stabilne")
@@ -241,7 +256,7 @@ def dane_interfejs(okno, wzor, lanc_Kodonow):
     linijka_7.grid(row=6, column=0, sticky=W)
     linijka_8.grid(row=7, column=0, sticky=W)
     linijka_9.grid(row=8, column=0, sticky=W)
-    returnButton = CTkButton(okno, text="Wróć", command=lambda: wykresy(okno, wzor, lanc_Kodonow),
+    returnButton = CTkButton(okno, text="Wróć", command=lambda: zniszcz(okno),
                              width=100)
     returnButton.grid(row=10, column=1)
 def zniszcz(okno):
