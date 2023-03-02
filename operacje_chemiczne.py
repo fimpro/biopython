@@ -118,6 +118,79 @@ def indeks_hydrofobowy(lanc_kodonow):  # funkcja ze słownikiem zwraca gotowe ta
     for x in lanc_kodonow:
         dane_y.append(kd[x])
     return dane_y
+def polarnosc(lanc): #słownik z polarnościa -> tablica do wykresu
+    pol = {
+        'A': 0,
+        'R': 52.0,
+        'N': 3.38,
+        'D': 40.7,
+        'C': 1.5,
+        'Q': 3.5,
+        'E': 50,
+        'G': 0,
+        'H': 51.6,
+        'I': 0.1,
+        'L': 0.4,
+        'K': 49.5,
+        'M': 1.4,
+        'F': 0.3,
+        'P': 1.6,
+        'S': 1.7,
+        'T': 1.7,
+        'W': 2.1,
+        'Y': 1.6,
+        'V': 0.1
+    }
+    dane_y = []
+    for x in lanc:
+        dane_y.append(pol[x])
+    return dane_y
+
+kd = {
+            'A': 1.8,
+            'R': -4.5,
+            'N': -3.5,
+            'D': -3.5,
+            'C': 2.5,
+            'Q': -3.5,
+            'E': -3.5,
+            'G': -0.4,
+            'H': -3.2,
+            'I': 4.5,
+            'L': 3.8,
+            'K': -3.9,
+            'M': 1.9,
+            'F': 2.8,
+            'P': -1.6,
+            'S': -0.8,
+            'T': -0.7,
+            'W': -0.9,
+            'Y': -1.3,
+            'V': 4.2
+    }
+
+gra = {
+            'A': 8.1,
+            'R': 10.5,
+            'N': 11.6,
+            'D': 13.0,
+            'C': 5.5,
+            'Q': 10.5,
+            'E': 12.3,
+            'G': 9.0,
+            'H': 10.4,
+            'I': 5.2,
+            'L': 4.9,
+            'K': 11.3,
+            'M': 5.7,
+            'F': 5.2,
+            'P': 8.0,
+            'S': 9.2,
+            'T': 8.6,
+            'W': 5.4,
+            'Y': 6.2,
+            'V': 5.9
+}
 def listaAtomow(wzor):
     mol=Chem.MolFromSmiles(wzor)
     for atom in mol.GetAtoms():
