@@ -76,9 +76,9 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
         okno.columnconfigure(x, weight=0)
     for x in range(10):
         okno.rowconfigure(x, weight=0)
-    for x in range(5):
+    for x in range(4):
         okno.columnconfigure(x, weight=2)
-    okno.columnconfigure(5, weight=3)
+    okno.columnconfigure(4, weight=3)
     okno.rowconfigure(0, weight=1)
     okno.rowconfigure(1,weight=1)
     okno.rowconfigure(2, weight=5)
@@ -112,8 +112,8 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
     obraz.grid(row=2, column=0,columnspan=4, sticky=N)
     opis.grid(row=0, column=0,sticky=W+E)
     wejscie.grid(row=1, column=0, columnspan=4,sticky=W+E)
-    szukajButton.grid(row=1, column=5,sticky=W+E)
-    wrocButton.grid(row=2, column=5,sticky=W+E)
+    szukajButton.grid(row=1, column=4,sticky=W+E)
+    wrocButton.grid(row=2, column=4,sticky=W+E)
 
 
 
@@ -305,6 +305,8 @@ def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     for x in range(10):
         okno.rowconfigure(x, weight=0)
     okno.columnconfigure(0,weight=1)
+    for x in range(8):
+        okno.rowconfigure(x, weight=1)
     #tworze widgety
     napisMode = CTkLabel(okno, text="Zmień kolor tła:")
     napisKolor = CTkLabel(okno, text="Zmień kolor przycisków:")
@@ -318,14 +320,14 @@ def interfaceOpcje(okno):  # funkcja wczytująca interface opcji
     else:
         przyciskPodswietlaj = CTkButton(okno, text="Nie", command=lambda: podswietlenie(okno))
     #wrzucam widgety w okno
-    przyciskMode.grid(row=1, column=0)
-    przyciskKolor.grid(row=3, column=0)
-    przyciskPodswietlaj.grid(row=5, column=0)
-    przyciskWroc.grid(row=7, column=0)
-    napisMode.grid(row=0, column=0)
-    napisKolor.grid(row=2, column=0)
-    napisPodswietlaj.grid(row=4, column=0)
-    napisWroc.grid(row=6, column=0)
+    przyciskMode.grid(row=1, column=0,sticky=W+E,padx=100)
+    przyciskKolor.grid(row=3, column=0,sticky=W+E,padx=100)
+    przyciskPodswietlaj.grid(row=5, column=0,sticky=W+E,padx=100)
+    przyciskWroc.grid(row=7, column=0,sticky=W+E,padx=100)
+    napisMode.grid(row=0, column=0,sticky=W+E,padx=100)
+    napisKolor.grid(row=2, column=0,sticky=W+E,padx=100)
+    napisPodswietlaj.grid(row=4, column=0,sticky=W+E,padx=100)
+    napisWroc.grid(row=6, column=0,sticky=W+E,padx=100)
 
 
 def podswietlenie(okno):
