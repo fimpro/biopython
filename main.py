@@ -7,9 +7,7 @@ from rdkit.Chem import rdCoordGen
 import operacje_chemiczne
 import rysowania
 from tkinter import filedialog
-import math
 from PIL import Image
-from Bio.SeqUtils.ProtParam import ProteinAnalysis
 mode = "dark"  # zmienna przechowująca tryb aplikacji
 base_color = "dark-blue"
 czy_podswietlaj = True
@@ -388,6 +386,20 @@ def zmien_kolor(okno):
 def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
     for widget in okno.winfo_children():
         widget.destroy()
+
+    global size
+    size = (okno.winfo_width(), okno.winfo_height())
+    # ustawiam wagi kolumn
+    for x in range(10):
+        okno.columnconfigure(x, weight=0)
+    for x in range(10):
+        okno.rowconfigure(x, weight=0)
+    for x in range(5):
+        okno.columnconfigure(x, weight=2)
+    okno.columnconfigure(5, weight=3)
+    okno.rowconfigure(0, weight=1)
+    okno.rowconfigure(1, weight=1)
+    okno.rowconfigure(2, weight=5)
     ramka = CTkScrollableFrame(okno, width=500, height=1000)
     ramka.grid(row=1, column=0, columnspan=4, sticky=E + W + N + S)
     for x in range(5):
@@ -395,13 +407,14 @@ def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
 
     napis = CTkLabel(ramka, text="Jak to wlaczysz to wtedy na rysowaniu si podswietla glowny ten taki lancuch", )
     napis.grid(row=0, column=2, sticky=W + E)
-    img1 = CTkImage(light_image=Image.open(r"C:\Users\User\Desktop\pythonowy_projekt_bialkowy\podswietl.png"),
-                    dark_image=Image.open(r"C:\Users\User\Desktop\pythonowy_projekt_bialkowy\podswietl.png"),
+    img1 = CTkImage(light_image=Image.open("podswietl.png"),
+                    dark_image=Image.open("podswietl.png"),
                     size=(500, 1000))
     obraz = CTkLabel(ramka, text="", image=img1)
     obraz.grid(row=1, column=2, rowspan=3, sticky=NW)
     wrocButton = CTkButton(ramka, text="Wroc", width=15, command=lambda: interfejs(okno))
     wrocButton.grid(row=0, column=0, sticky=W + E)
+
 
 if __name__ == '__main__':
     oknoR = CTk()
