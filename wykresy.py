@@ -232,7 +232,7 @@ def dane_interfejs(ramex, wzor, lanc_Kodonow):
         dw.append("białko stabilne")
     elif (analizuj.instability_index() > 40):
         dw.append("białko niestabilne")
-    dw.append(MolWt(Chem.MolFromSmiles(wzor)))
+    dw.append(analizuj.molecular_weight())
     struktura = dw[0]
     linijka_1 = CTkLabel(okno, text="Na strukturę drugorzędową tego białka składa się:")
     linijka_2 = CTkLabel(okno, text=str("- "+str(round(struktura[0] * 100,3)) + " % harmonijek beta (pofałdowanej płaszczyzny)"))
