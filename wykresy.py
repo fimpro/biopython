@@ -122,8 +122,7 @@ def rysowanie_wykresu(okno, lanc_Kodonow):
     for i in dane_kwasy:   dane_kwasy[i] = dane_kwasy[i] * 100
     for i in dane_kwasy:
         lista.append(dane_kwasy.get(i))
-    dane = {'Aminokwas': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
-                          'Y', ],
+    dane = {'Aminokwas': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y', ],
             'Częstotliwość występowania': lista}
 
     Obraz_aminokwasów = plt.Figure(figsize=(10, 4), dpi=50)
