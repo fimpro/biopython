@@ -97,7 +97,6 @@ def rozklad_na_bialka(lanc): #funkcja przyjmująca łańcuch kodonów, a zwracaj
     j=0
     czy_bialko=False #czy mamy zapisywać kodony
     czy_skonczone=True #żeby białko się zapisało musi kończyć się kodonem stop
-    dl=len(lanc)
     for i in lanc: #for który każdy kodon podłacza do danego białka
         if (i == "*" and czy_bialko): #kodony stop oznaczone są w biopythonie *
             czy_bialko = False
