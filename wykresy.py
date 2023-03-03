@@ -74,6 +74,7 @@ def rysowanie_wykresu(okno, lanc_Kodonow):
     wartości_skala = (dane_do_wykresu[3])
     wartości_niestabilność = (dane_do_wykresu[4])
     dlugosc = len(wartości_hydrofobia)
+    plt.rcParams.update({'font.size': 18})
     aminokwas = []
     for x in range(dlugosc):
         aminokwas.append(x+1)
