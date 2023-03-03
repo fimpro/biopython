@@ -13,16 +13,6 @@ from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors as _rdMolDescriptors
 MolWt = lambda *x,**y:_rdMolDescriptors._CalcMolWt(*x,**y)
 
-def pH_bialka(lanc):
-    analizuj = ProteinAnalysis(lanc)
-    pH = (analizuj.isoelectric_point())
-    if pH < 5.0:
-        return "kwasowe"
-    elif 5.0 <= pH <= 6.5:
-        return "obojętne"
-    elif pH > 6.5:
-        return "zasadowe"
-
 def dane_wykres(lanc, suwak):
     dane = []
     window = int(suwak.get())
@@ -238,7 +228,7 @@ def dane_interfejs(ramex, wzor, lanc_Kodonow):
     dw.append(analizuj.secondary_structure_fraction())
     # zwraca tablice z 3 wartościami, ktore zawieraja %: sheets, helixes, turns cokolwiek by to nie było XD
     dw.append(analizuj.isoelectric_point())
-    dw.append(pH_bialka(lanc_Kodonow))
+    dw.append(operacje_chemiczne.pH_bialka(lanc_Kodonow))
     dw.append(analizuj.instability_index())
     if (analizuj.instability_index() <= 40):
         dw.append("białko stabilne")
