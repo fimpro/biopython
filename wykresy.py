@@ -131,7 +131,7 @@ def rysowanie_wykresu(okno, lanc_Kodonow):
     Wykres_aminokwasów.get_tk_widget().grid(row=1, column=0,sticky=N+W+E+S)
     Dane_aminokwasów = pd.DataFrame(dane)
     Dane_aminokwasów = Dane_aminokwasów[['Aminokwas', 'Częstotliwość występowania']].groupby('Aminokwas').sum()
-    Dane_aminokwasów.plot(kind='bar', legend=False, ax=Wypisz_wykres_aminokwasów)
+    Dane_aminokwasów.plot(kind='bar', legend=False, ax=Wypisz_wykres_aminokwasów, rot=0)
     Wypisz_wykres_aminokwasów.set_title('Częstotliwość występowania aminokwasów w białku w procentach')
 
 
