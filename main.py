@@ -167,7 +167,11 @@ def wczytaj_z_pliku(okno):  #funkcja wybierająca plik
     przyciskWroc.grid(row=3, column=4, sticky=W+E)
 def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
 
-    file_path = filedialog.askopenfilename(filetypes=[("Pliki tekstowe", "*.txt"), ("Pliki FASTA", "*.fasta")])
+    file_path = filedialog.askopenfilename(filetypes=[("Pliki tekstowe", "*.txt"), ("Pliki FASTA", "*.fasta"),
+                                                      ("Pliki FASTA", "*.fast"), ("Pliki FASTA", "*.seq"),
+                                                      ("Pliki FASTA", "*.fa"), ("Pliki FASTA", "*.fsa"),
+                                                      ("Pliki FASTA", "*.nt"), ("Pliki FASTA", "*.aa"),
+                                                      ("Pliki Genbank", "*.gbk"), ("Pliki Genbank", "*gb") ])
     if (file_path == ""):
         wczytaj_z_pliku(okno)
     else:
@@ -226,10 +230,18 @@ def otwieranie_pliku(okno, file_path): #funkcja wybierająca konkretny ciag z pl
                     b.grid(row=i, column=0, sticky=W + E)
                     i += 1
 
-    elif file_path.endswith(".fasta"): #plik fasta
+    elif (file_path.endswith(".fasta")or file_path.endswith(".fast")or file_path.endswith(".seq")or file_path.endswith(".fa")
+          or file_path.endswith(".fsa")or file_path.endswith(".nt")or file_path.endswith(".aa")): #plik fasta
         i=0
         with open(file_path, "r") as handle:
             for record in SeqIO.parse(handle, "fasta"):
+                x = CTkButton(ramka, text=record.id, width=(size[0] / 15) * 12-50,command=lambda sekwencja=record.seq: otwieranie_testowe(okno, file_path, sekwencja))
+                x.grid(row=i, column=0, sticky=W + E)
+                i+=1
+    elif (file_path.endswith(".gb")or file_path.endswith(".gbk")):
+        i=0
+        with open(file_path, "r") as handle:
+            for record in SeqIO.parse(handle, "genbank"):
                 x = CTkButton(ramka, text=record.id, width=(size[0] / 15) * 12-50,command=lambda sekwencja=record.seq: otwieranie_testowe(okno, file_path, sekwencja))
                 x.grid(row=i, column=0, sticky=W + E)
                 i+=1
