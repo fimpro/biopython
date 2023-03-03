@@ -305,8 +305,8 @@ def rysuj_bialka(ramka,bialka,i):
     przyciskNext = CTkButton(ramka, text="Następne", command=lambda: rysuj_bialka(ramka, bialka, aktualne_bialko + 10))
     przyciskBack = CTkButton(ramka, text="Poprzednie",command=lambda: rysuj_bialka(ramka, bialka, aktualne_bialko - 10))
 
-    przyciskNext.grid(row=11, column=1, pady=10,sticky=E+W)
-    przyciskBack.grid(row=11, column=3, pady=10,sticky=E+W)
+    przyciskNext.grid(row=11, column=3, pady=10,sticky=E+W)
+    przyciskBack.grid(row=11, column=1, pady=10,sticky=E+W)
 
     if(i>=0 and i+10<len(bialka)):
         aktualne_bialko = i
