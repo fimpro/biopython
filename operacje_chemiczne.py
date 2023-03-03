@@ -185,3 +185,13 @@ gra = {
             'Y': 6.2,
             'V': 5.9
 }
+
+def pH_bialka(lanc):
+    analizuj = ProteinAnalysis(lanc)
+    pH = (analizuj.isoelectric_point())
+    if pH < 5.0:
+        return "kwasowe"
+    elif 5.0 <= pH <= 6.5:
+        return "obojętne"
+    elif pH > 6.5:
+        return "zasadowe"
