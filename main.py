@@ -167,8 +167,8 @@ def wczytaj_z_pliku(okno):  #funkcja wybierająca plik
     przyciskWroc.grid(row=3, column=4, sticky=W+E)
 def przegladaj(okno): #funkcja pomocnicza do otwierania menu wyboru pliku
 
-    file_path = filedialog.askopenfilename(title="Wybierz Plik",filetypes=[("All files", "*.*")])
-    if(file_path==""):
+    file_path = filedialog.askopenfilename(filetypes=[("Pliki tekstowe", "*.txt"), ("Pliki FASTA", "*.fasta")])
+    if (file_path == ""):
         wczytaj_z_pliku(okno)
     else:
         otwieranie_pliku(okno, file_path)
@@ -304,21 +304,28 @@ def rysuj_bialka(ramka,bialka,i):
         widget.destroy()
     przyciskNext = CTkButton(ramka, text="Następne", command=lambda: rysuj_bialka(ramka, bialka, aktualne_bialko + 10))
     przyciskBack = CTkButton(ramka, text="Poprzednie",command=lambda: rysuj_bialka(ramka, bialka, aktualne_bialko - 10))
-
-    przyciskNext.grid(row=11, column=3, pady=10,sticky=E+W)
-    przyciskBack.grid(row=11, column=1, pady=10,sticky=E+W)
-
-    if(i>=0 and i+10<len(bialka)):
-        aktualne_bialko = i
+    wpiszStrone = CTkEntry(ramka, width=5, height=1)
+    przyciskIdzDo = CTkButton(ramka, text="Idź do:", command=lambda: rysuj_bialka(ramka, bialka,int(wpiszStrone.get())*10-10))
+    przyciskIdzDo.grid(row=12, column=0, pady=10, sticky=E+W)
+    wpiszStrone.grid(row=12, column=1, pady=10, sticky=E+W)
+    przyciskNext.grid(row=11, column=2, pady=10,sticky=E+W)
+    przyciskBack.grid(row=11, column=0, pady=10,sticky=E+W)
+    if(len(bialka)>=10):
+        if(i>=0 and i<len(bialka)):
+            aktualne_bialko = i
         strona = CTkLabel(ramka, text="Strona: "+str(int(aktualne_bialko / 10) + 1)+"/"+str(math.ceil(len(bialka)/10)))
-        strona.grid(row=11, column=2)
-        bialka_w_ramce = bialka[i:i+10]
-        for x in range(10):
-            rysuj_przyciski(ramka,x,bialka_w_ramce[x][0],bialka_w_ramce[x][1])
+        strona.grid(row=11, column=1)
+        bialka_w_ramce = bialka[aktualne_bialko:aktualne_bialko+10]
+        if((len(bialka)-aktualne_bialko)<10):
+            for x in range(len(bialka)-aktualne_bialko):
+                rysuj_przyciski(ramka, x, bialka_w_ramce[x][0], bialka_w_ramce[x][1])
+        else:
+            for x in range(10):
+                rysuj_przyciski(ramka,x,bialka_w_ramce[x][0],bialka_w_ramce[x][1])
     if(len(bialka)<10):
         aktualne_bialko = 0
         strona = CTkLabel(ramka, text="Strona: 1/1")
-        strona.grid(row=11, column=2)
+        strona.grid(row=11, column=1)
         for x in range(len(bialka)):
             rysuj_przyciski(ramka, x, bialka[x][0],bialka[x][1])
 
