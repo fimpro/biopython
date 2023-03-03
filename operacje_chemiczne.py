@@ -185,7 +185,7 @@ gra = {
             'Y': 6.2,
             'V': 5.9
 }
-
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
 def pH_bialka(lanc):
     analizuj = ProteinAnalysis(lanc)
     pH = (analizuj.isoelectric_point())
