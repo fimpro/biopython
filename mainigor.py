@@ -12,6 +12,7 @@ from tkinter import ttk
 from tkinter.messagebox import showinfo
 import math
 import time
+
 mode = "dark"  # zmienna przechowująca tryb aplikacji
 base_color = "dark-blue"
 czy_podswietlaj = True
@@ -97,7 +98,7 @@ def wczytaj_recznie(okno, lancpoczatkowy=""):  # funkcja wczytująca dane z "pal
     opis = CTkLabel(okno, text="Wpisz kod nici RNA lub DNA:", width=((size[0] * 2) / 15))
     szukajButton = CTkButton(okno, text="Szukaj Białek", width=((size[0] * 3) / 15),
                              command=lambda: otwieranie_lancucha(okno, file_path,
-                                                                wejscie.get()))  # wyszukuje bialka w wpisanym lancuchu, i rysuje je w ramce
+                                                                 wejscie.get()))  # wyszukuje bialka w wpisanym lancuchu, i rysuje je w ramce
     wrocButton = CTkButton(okno, text="Wróć", width=15, command=lambda: interfejs(okno))
 
     wzor, ostatni = operacje_chemiczne.wzor_lancucha_aminokwasow("MPPPPPPPNACR")
@@ -265,7 +266,7 @@ def otwieranie_pliku(okno, file_path):  # funkcja wybierająca konkretny ciag z 
 def rysuj_przyciski(ramka, i, bialko, przesuniecie):
     if (len(bialko) > 10):
         Label = CTkLabel(ramka, text=(
-                    bialko[:5] + "..." + bialko[len(bialko) - 5:] + " P:" + przesuniecie + " Len: " + str(len(bialko))))
+                bialko[:5] + "..." + bialko[len(bialko) - 5:] + " P:" + przesuniecie + " Len: " + str(len(bialko))))
         Label.grid(row=i, padx=2, column=0)
     else:
         Label = CTkLabel(ramka, text=(bialko + " P:" + przesuniecie))
@@ -311,18 +312,18 @@ def otwieranie_lancucha(okno, file_path, sequence):
     bialka1 = operacje_chemiczne.rozklad_na_bialka(lanc1)  # 3 łancuchy białek dla 3 przesunięć
     bialka2 = operacje_chemiczne.rozklad_na_bialka(lanc2)
     bialka3 = operacje_chemiczne.rozklad_na_bialka(lanc3)
-    dl1=len(bialka1)
-    dl2=len(bialka2)
+    dl1 = len(bialka1)
+    dl2 = len(bialka2)
     dl3 = len(bialka3)
-    if(dl1==1):
+    if (dl1 == 1):
         text1 = " białko dla łańcucha zaczynającego \n się od 0 aminokwasu"
     else:
-        text1=" białek dla łańcucha zaczynającego \n się od 0 aminokwasu"
-    Napis="W łańcuchu jest:"+"\n"+"- "+str(dl1)+text1+"\n"\
-          +"- "+str(dl2)+" od 1 aminokwasu"+"\n"+"- "+str(dl3)+" od 2 aminokwasu"
+        text1 = " białek dla łańcucha zaczynającego \n się od 0 aminokwasu"
+    Napis = "W łańcuchu jest:" + "\n" + "- " + str(dl1) + text1 + "\n" \
+            + "- " + str(dl2) + " od 1 aminokwasu" + "\n" + "- " + str(dl3) + " od 2 aminokwasu"
     bialka = []
-    liczbaBialek=CTkLabel(okno,text=Napis)
-    liczbaBialek.grid(row=1, column=4, sticky=W+E)
+    liczbaBialek = CTkLabel(okno, text=Napis)
+    liczbaBialek.grid(row=1, column=4, sticky=W + E)
     for x in bialka1:
         bialka.append([x, "0"])
     for x in bialka2:
@@ -464,6 +465,48 @@ def zmien_kolor(okno):
         interfaceOpcje(okno)  # ta funkcja aktualizuje napisy na przyciskach
 
 
+def przepisNaZmiane(obraz2, wybor, ramka): #funckja zwracająca event dzieki której morzemy po włączeniu instrukcji łatwiej robić cokolwiek po zmianie okienka w comboboxsie
+    def Zmiana(event):
+        file = None
+        obraz2.grid_remove()#niszcze poprzedni obraz by nie zaśmiecać
+
+
+        if wybor.get() == "Wstep":#podmieniam pliki zależnie od wyboru
+            file = "wstep.PNG"
+
+        elif (wybor.get() == "Opcje"):
+            file = "opcje.PNG"
+
+        elif (wybor.get() == "Dane Ręcznie"):
+
+            file = "danerecznie.PNG"
+
+        elif (wybor.get() == "Dane z pliku"):
+            file = "danezpliku.PNG"
+
+        elif (wybor.get() == "Szukaj białek"):
+            file = "szukajbialek.PNG"
+
+        elif (wybor.get() == "Generowanie"):
+            file = "generowanie.PNG"
+
+        elif (wybor.get() == "Wykresy"):
+            file = "wykresy.PNG"
+
+        img1 = CTkImage(light_image=Image.open(file),
+                        dark_image=Image.open(file),
+                        size=(600, 800))
+        if(wybor.get() == "Generowanie"):
+            img1 = CTkImage(light_image=Image.open(file),
+                            dark_image=Image.open(file),
+                            size=(600, 2400))
+
+        obraz = CTkLabel(ramka, text="", image=img1)
+        obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
+
+    return Zmiana #zwracamy event
+
+
 def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
     for widget in okno.winfo_children():
         widget.destroy()
@@ -488,66 +531,36 @@ def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
         ramka.columnconfigure(x, weight=1)
 
     # tworze combobox
-    selected_month = StringVar()
-    month_cb = ttk.Combobox(ramka, textvariable=selected_month)
-    month_cb['values'] = ["Wstep", "Opcje", "Dane Ręcznie", "Dane z pliku", "Generowanie", "Wykresy"]
-    month_cb['state'] = 'readonly'
-    month_cb.grid(row=1, column=3, sticky=W + E)
-    def month_changed(event):
-        if(selected_month.get()=="Wstep"):
-            img1 = CTkImage(light_image=Image.open("podswietl.PNG"),
-                            dark_image=Image.open("podswietl.PNG"),
-                            size=(600, 800))
-            obraz = CTkLabel(ramka, text="", image=img1)
-            obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
-        if (selected_month.get() == "Opcje"):
-            img1 = CTkImage(light_image=Image.open("opcje.PNG"),
-                        dark_image=Image.open("opcje.PNG"),
-                        size=(600, 800))
-            obraz = CTkLabel(ramka, text="", image=img1)
-            obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
-        if (selected_month.get() == "Dane Ręcznie"):
-            img1 = CTkImage(light_image=Image.open("twojastara.PNG"),
-                        dark_image=Image.open("twojastara.PNG"),
-                        size=(600, 800))
-            obraz = CTkLabel(ramka, text="", image=img1)
-            obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
-        if (selected_month.get() == "Dane z pliku"):
-            img1 = CTkImage(light_image=Image.open("opcje.PNG"),
-                            dark_image=Image.open("opcje.PNG"),
-                            size=(600, 800))
-            obraz = CTkLabel(ramka, text="", image=img1)
-            obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
-        if (selected_month.get() == "Generowanie"):
-            img1 = CTkImage(light_image=Image.open("opcje.PNG"),
-                            dark_image=Image.open("opcje.PNG"),
-                            size=(600, 800))
-            obraz = CTkLabel(ramka, text="", image=img1)
-            obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
-        if (selected_month.get() == "Wykresy"):
-            img1 = CTkImage(light_image=Image.open("opcje.PNG"),
-                            dark_image=Image.open("opcje.PNG"),
-                            size=(600, 800))
-            obraz = CTkLabel(ramka, text="", image=img1)
-            obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
+    wybor = StringVar()
+    instrukcja_cb = ttk.Combobox(ramka, textvariable=wybor)
+    instrukcja_cb['values'] = ["Wstep", "Opcje", "Dane Ręcznie", "Dane z pliku", "Szukaj białek", "Generowanie", "Wykresy"]
+    instrukcja_cb['state'] = 'readonly'
+    instrukcja_cb.grid(row=1, column=3, sticky=W + E)
 
-    month_cb.bind('<<ComboboxSelected>>', month_changed)
-
-    napis = CTkLabel(ramka, text="Instrukcja", fg_color=("white","black"))
-    napis.grid(row=0, column=2, sticky=W + E)
-    img1 = CTkImage(light_image=Image.open("podswietl.png"),
-                    dark_image=Image.open("podswietl.png"),
+    #tworze wstep
+    img1 = CTkImage(light_image=Image.open("wstep.png"),
+                    dark_image=Image.open("wstep.png"),
                     size=(600, 800))
     obraz = CTkLabel(ramka, text="", image=img1)
+    obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
+
+
+    #odpalam funkcje która po zwrocie eventu bedzie zmieniałą obraz w zaleznosci od wyboru
+    instrukcja_cb.bind("<<ComboboxSelected>>", przepisNaZmiane(obraz, wybor, ramka))
+
+    #tworze widgety
+    napis = CTkLabel(ramka, text="Instrukcja", fg_color=("white", "black"))
+    napis.grid(row=0, column=2, sticky=W + E)
 
     przerwa = CTkLabel(ramka, text="", width=15)
     przerwa.grid(row=0, column=0, sticky=W + E)
 
-    obraz.grid(row=2, column=2, rowspan=3, sticky=NW)
     wrocButton = CTkButton(ramka, text="Wroc", width=15, command=lambda: interfejs(okno))
     wrocButton.grid(row=0, column=3, sticky=W + E)
 
     ramka.mainloop()
+
+
 if __name__ == '__main__':
     oknoR = CTk()
     okno = CTkFrame(oknoR)
