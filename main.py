@@ -484,10 +484,10 @@ def instrukcja(okno):  # funkcja wczytująca instruckje użytkowania
     for x in range(5):
         ramka.columnconfigure(x, weight=1)
 
-    napis = CTkLabel(ramka, text="Jak to wlaczysz to wtedy na rysowaniu si podswietla glowny ten taki lancuch", )
+    napis = CTkLabel(ramka, text="Instrukcja", )
     napis.grid(row=0, column=2, sticky=W + E)
-    img1 = CTkImage(light_image=Image.open("podswietl.png"),
-                    dark_image=Image.open("podswietl.png"),
+    img1 = CTkImage(light_image=Image.open("images/wstep.PNG"),
+                    dark_image=Image.open("images/wstep.PNG"),
                     size=(500, 1000))
     obraz = CTkLabel(ramka, text="", image=img1)
     obraz.grid(row=1, column=2, rowspan=3, sticky=NW)

@@ -1,0 +1,8 @@
+biopython~=1.84
+rdkit~=2024.9.1
+customtkinter~=5.2.2
+bio~=1.7.1
+pandas~=2.2.3
+numpy~=2.2.1
+matplotlib
+pillow
