@@ -4,9 +4,12 @@ KatolGenom is tool, for extracting posible proteins recipes from RNA or DNA chai
 Welcome to Katolgenom! This guide will help you navigate through the program features efficiently. Let's dive into the details of each screen.
 
 ---
-![main interface](screen1.png)
-![found proteins](screen2.png)
-![plots]()
+Main interface (Image is one of proteins our program found in potato DNA)
+![main interface](screen2.png)
+Example of proteins found in simple DNA sequence
+![found proteins](screen1.png)
+Some chemical properities of one found protein.
+![plots](screen3.png)
 ## **Screen 1: Main Interface**
 
 The starting point of the Katolgenom program. You can access various functionalities via four buttons:
